@@ -1,0 +1,15 @@
+
+version: 2
+
+models:
+  - name: transactions
+    description: "Combined and translated transactions from Revolut and Bank of America"
+    columns:
+      - name: status
+        description: "The posting state of the transaction"
+        data_tests:
+          - not_null
+      - name: amount
+        description: "The amount of the transaction"
+        data_tests:
+          - not_null

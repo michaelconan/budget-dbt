@@ -1,0 +1,88 @@
+# Common Revolut statement columns and data tests
+revolut_columns: &revolut_columns
+  - name: type
+    description: "The kind of the transaction"
+    data_tests:
+      - not_null
+      - accepted_values:
+          values:
+            - TRANSFER
+            - CARD_PAYMENT
+            - TAX
+            - REV_PAYMENT
+            - ATM
+            - TOPUP
+            - INTEREST
+  - name: product
+    description: "The type of account in which the transaction was made"
+    data_tests:
+      - not_null
+      - accepted_values:
+          values:
+            - Current
+            - Pocket
+            - Savings
+            - Deposit
+  - name: amount
+    description: "The amount of the transaction"
+    data_tests:
+      - not_null
+  - name: state
+    description: "Whether the transaction is posted or reverted"
+    data_tests:
+      - not_null
+      - accepted_values:
+          values:
+            - COMPLETED
+            - REVERTED
+
+test_null_or_empty: &not_null_or_empty
+  - not_null
+  - dbt_utils.not_empty_string
+
+sources:
+  - name: revolut
+    description: "Transaction data exported from Revolut"
+    database: etl
+    schema: main
+    tables:
+        - name: personal
+          identifier: raw_revolut__personal
+          description: "Personal account statement exported from Revolut"
+          columns: *revolut_columns
+        - name: joint
+          identifier: raw_revolut__joint
+          description: "Joint account statement exported from Revolut"
+          columns: *revolut_columns
+  - name: bofa
+    description: "Transaction data exported from Bank of America"
+    database: etl
+    schema: main
+    tables:
+      - name: activity
+        identifier: raw_bofa__activity
+        description: "My Financial Picture activity data exported from Bank of America"
+        columns:
+          - name: date
+            description: "The date on which the transaction was completed"
+            data_tests:
+              - not_null
+              - dbt_utils.not_empty_string
+              - dbt_expectations.expect_column_values_to_match_regex:
+                  regex: "\\d{2}\\/\\d{2}\\/\\d{4}"
+                  is_raw: True
+          - name: status
+            description: "The posting state of the transaction"
+            data_tests: *not_null_or_empty
+          - name: original_description
+            description: "The description provided by the transaction vendor"
+            data_tests: *not_null_or_empty
+          - name: amount
+            description: "The amount of the transaction"
+            data_tests: *not_null_or_empty
+          - name: currency
+            description: "The currency of the transaction"
+            data_tests: *not_null_or_empty
+          - name: account_name
+            description: "The account in which the transaction occurred"
+            data_tests: *not_null_or_empty
