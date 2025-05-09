@@ -1,0 +1,11 @@
+
+version: 2
+
+seeds:
+  - name: google_finance__eur_usd
+    config:
+      quote_columns: false
+      column_types:
+        Date: str
+        Close: float
+      delimiter: ","

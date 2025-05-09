@@ -1,0 +1,8 @@
+# Transaction data files
+data/**/*.csv
+# SQLite database files
+db/*.db
+# Python venv
+.venv
+# Log files
+*.log

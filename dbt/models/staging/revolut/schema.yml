@@ -1,0 +1,12 @@
+
+version: 2
+
+models:
+  - name: stg_revolut__transactions
+    description: "Transactions from Revolut personal and joint accounts and pockets"
+    columns:
+      - name: transaction_key
+        description: "The unique hash key for the transaction"
+        data_tests:
+          - not_null
+          - unique
