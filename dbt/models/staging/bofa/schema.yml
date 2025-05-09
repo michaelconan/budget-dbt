@@ -1,0 +1,12 @@
+
+version: 2
+
+models:
+  - name: stg_bofa__transactions
+    description: "Transactions from Bank of America and connected accounts"
+    columns:
+      - name: transaction_key
+        description: "The unique hash key for the transaction"
+        data_tests:
+          - not_null
+          - unique
