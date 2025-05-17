@@ -1,12 +1,16 @@
 with revolut as (
 
     select
+        transaction_key,
+        'us' as country,
+        'revolut' as source,
         product as account,
         completed_date as "date",
         "description",
         amount,
         currency,
-        "state" as "status"
+        "state" as "status",
+        is_transfer
     from
         {{ ref('stg_revolut__transactions') }}
 
@@ -15,12 +19,16 @@ with revolut as (
 bofa as (
 
     select
+        transaction_key,
+        'ie' as country,
+        'bofa' as source,
         account_name as account,
         "date",
         coalesce(simple_description, original_description) as "description",
         amount,
         currency,
-        "status"
+        "status",
+        is_transfer
     from
         {{ ref('stg_bofa__transactions') }}
 ),
@@ -62,5 +70,4 @@ translated as (
 )
 
 select *
-from
-    translated
+from translated

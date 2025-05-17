@@ -1,3 +1,5 @@
+-- 1. Load transactions from Bank of America
+
 with transactions as (
 
     select
@@ -21,7 +23,58 @@ with transactions as (
     from
         {{ source('bofa', 'activity') }}
 
+),
+
+-- 2. Create a surrogate key for each transaction
+
+keyed as (
+
+    select
+        {{ dbt_utils.generate_surrogate_key(
+                ['account_name', 'date', 'original_description', 'amount']
+            )
+        }}
+            as transaction_key,
+        *
+    from
+        transactions
+
+),
+
+-- 3. Identify transfers between accounts
+
+transfers as (
+
+    {{ get_transfer_transactions('keyed', 'date', 'account_name', 'amount') }}
+
+),
+
+-- 4. Flag transactions that are transfers
+
+flagged as (
+
+    select
+        cast(k.transaction_key as text) as transaction_key,  
+        "status",
+        category,
+        currency,
+        amount,
+        cast(account_name as text) as account_name,
+        cast("date" as text) as "date",
+        original_description,
+        split_type,
+        user_description,
+        memo,
+        classification,
+        simple_description,
+        (t.transaction_key is not null) as is_transfer
+    from
+        keyed as k
+    left join
+        transfers as t
+        on k.transaction_key = t.transaction_key
+
 )
 
 select *
-from transactions
+from flagged
