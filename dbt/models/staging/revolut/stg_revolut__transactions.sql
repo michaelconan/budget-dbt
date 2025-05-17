@@ -68,25 +68,23 @@ keyed as (
 
 transfers as (
 
-    {{ get_transfer_transactions('keyed', 'completed_date', 'product', 'amount') }}
-
-),
+    {{ get_transfer_transactions('keyed', 'completed_date', 'product', 'amount') }}),
 
 -- 5. Select all transactions and indicate if they are transfers
 flagged as (
 
     select
         cast(k.transaction_key as text) as transaction_key,
-        "type",
-        cast(product as text) as product,
-        cast(substr(started_date, 1, 10) as text) as started_date,
-        cast(substr(completed_date, 1, 10) as text) as completed_date,
-        "description",
-        amount,
-        fee,
-        currency,
-        "state",
-        balance,
+        k.type,
+        cast(k.product as text) as product,
+        cast(substr(k.started_date, 1, 10) as text) as started_date,
+        cast(substr(k.completed_date, 1, 10) as text) as completed_date,
+        k.description,
+        k.amount,
+        k.fee,
+        k.currency,
+        k.state,
+        k.balance,
         (t.transaction_key is not null) as is_transfer
     from
         keyed as k
