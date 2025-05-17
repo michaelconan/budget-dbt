@@ -1,5 +1,5 @@
 # load.sh
-# Load transaction exports to SQLite raw tables for DBT
+# Load transaction exports to SQLite raw tables for dbt
 
 DB="db/etl.db"
 
