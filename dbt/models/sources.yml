@@ -68,9 +68,8 @@ sources:
             data_tests:
               - not_null
               - dbt_utils.not_empty_string
-              - dbt_expectations.expect_column_values_to_match_regex:
-                  regex: "\\d{2}\\/\\d{2}\\/\\d{4}"
-                  is_raw: True
+              - column_values_match_regex:
+                  pattern: "[0-9]{2}/[0-9]{2}/[0-9]{4}"
           - name: status
             description: "The posting state of the transaction"
             data_tests: *not_null_or_empty
