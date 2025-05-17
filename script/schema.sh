@@ -1,5 +1,5 @@
 # schema.sh
-# Create SQLite raw tables to load transactional data for DBT
+# Create SQLite raw tables to load transactional data for dbt
 
 DB="db/etl.db"
 

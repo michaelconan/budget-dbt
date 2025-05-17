@@ -2,6 +2,7 @@
 revolut_columns: &revolut_columns
   - name: type
     description: "The kind of the transaction"
+    data_type: text
     data_tests:
       - not_null
       - accepted_values:
@@ -15,6 +16,7 @@ revolut_columns: &revolut_columns
             - INTEREST
   - name: product
     description: "The type of account in which the transaction was made"
+    data_type: text
     data_tests:
       - not_null
       - accepted_values:
@@ -25,10 +27,12 @@ revolut_columns: &revolut_columns
             - Deposit
   - name: amount
     description: "The amount of the transaction"
+    data_type: real
     data_tests:
       - not_null
   - name: state
     description: "Whether the transaction is posted or reverted"
+    data_type: text
     data_tests:
       - not_null
       - accepted_values:
@@ -65,6 +69,7 @@ sources:
         columns:
           - name: date
             description: "The date on which the transaction was completed"
+            data_type: text
             data_tests:
               - not_null
               - dbt_utils.not_empty_string
@@ -72,16 +77,21 @@ sources:
                   pattern: "[0-9]{2}/[0-9]{2}/[0-9]{4}"
           - name: status
             description: "The posting state of the transaction"
+            data_type: text
             data_tests: *not_null_or_empty
           - name: original_description
             description: "The description provided by the transaction vendor"
+            data_type: text
             data_tests: *not_null_or_empty
           - name: amount
             description: "The amount of the transaction"
+            data_type: real
             data_tests: *not_null_or_empty
           - name: currency
             description: "The currency of the transaction"
+            data_type: text
             data_tests: *not_null_or_empty
           - name: account_name
             description: "The account in which the transaction occurred"
+            data_type: text
             data_tests: *not_null_or_empty
