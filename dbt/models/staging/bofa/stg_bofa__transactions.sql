@@ -45,28 +45,26 @@ keyed as (
 
 transfers as (
 
-    {{ get_transfer_transactions('keyed', 'date', 'account_name', 'amount') }}
-
-),
+    {{ get_transfer_transactions('keyed', 'date', 'account_name', 'amount') }}),
 
 -- 4. Flag transactions that are transfers
 
 flagged as (
 
     select
-        cast(k.transaction_key as text) as transaction_key,  
-        "status",
-        category,
-        currency,
-        amount,
-        cast(account_name as text) as account_name,
-        cast("date" as text) as "date",
-        original_description,
-        split_type,
-        user_description,
-        memo,
-        classification,
-        simple_description,
+        cast(k.transaction_key as text) as transaction_key,
+        k.status,
+        k.category,
+        k.currency,
+        k.amount,
+        cast(k.account_name as text) as account_name,
+        cast(k.date as text) as "date",
+        k.original_description,
+        k.split_type,
+        k.user_description,
+        k.memo,
+        k.classification,
+        k.simple_description,
         (t.transaction_key is not null) as is_transfer
     from
         keyed as k

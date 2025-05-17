@@ -7,9 +7,11 @@ models:
     columns:
       - name: status
         description: "The posting state of the transaction"
+        data_type: text
         data_tests:
           - not_null
       - name: amount
         description: "The amount of the transaction"
+        data_type: real
         data_tests:
           - not_null
