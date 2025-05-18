@@ -19,6 +19,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install project
         run: |
+          pip install pipenv
           pipenv install
       - name: Generate docs
         run: |
