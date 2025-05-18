@@ -23,8 +23,8 @@ jobs:
           pipenv install
       - name: Generate docs
         run: |
-          dbt deps
-          dbt docs generate --static
+          pipenv run dbt deps
+          pipenv run dbt docs generate --static
       - name: Copy docs
         run: |
           cp ./dbt/target/static_index.html ./docs/index.html
