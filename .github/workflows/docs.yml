@@ -13,14 +13,6 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python 3
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: Install project
-        run: |
-          pip install pipenv
-          pipenv install
       - name: Install SQLPkg
         run: |
           curl.exe https://webi.ms/sqlpkg | powershell
@@ -30,7 +22,16 @@ jobs:
           echo $env:PATH
       - name: Install extensions
         run: |
-          sqlpkg.exe install nalgeon/crypto nalgeon/regexp
+          sqlpkg.exe install nalgeon/crypto
+          sqlpkg.exe install nalgeon/regexp
+      - name: Set up Python 3
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install project
+        run: |
+          pip install pipenv
+          pipenv install      
       - name: Generate docs
         run: |
           pipenv run dbt deps
