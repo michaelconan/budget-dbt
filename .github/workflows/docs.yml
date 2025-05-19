@@ -24,6 +24,10 @@ jobs:
       - name: Install SQLPkg
         run: |
           curl.exe https://webi.ms/sqlpkg | powershell
+      - name: Update PATH
+        run: |
+          echo "${env:USERPROFILE}\.local\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo $env:PATH
       - name: Install extensions
         run: |
           sqlpkg.exe install nalgeon/crypto nalgeon/regexp
