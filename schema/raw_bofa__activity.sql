@@ -2,6 +2,7 @@
 -- Bank of America transaction activity
 -- exported from 'My Financial Picture'
 -- ====================================
+DROP TABLE IF EXISTS raw_bofa__activity;
 CREATE TABLE raw_bofa__activity (
     "status" TEXT,
     "date" TEXT,

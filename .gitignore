@@ -1,5 +1,7 @@
 # Transaction data files
 data/**/*.csv
+# Seed data files
+dbt/seeds/**/*.csv
 # SQLite database files
 db/*.db
 # Python venv

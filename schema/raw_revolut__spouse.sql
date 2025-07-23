@@ -1,8 +1,8 @@
 -- =======================================
--- Revolut statement for personal accounts
+-- Revolut statement for spouse accounts
 -- =======================================
-DROP TABLE IF EXISTS raw_revolut__personal;
-CREATE TABLE raw_revolut__personal (
+DROP TABLE IF EXISTS raw_revolut__spouse;
+CREATE TABLE raw_revolut__spouse (
     "type" TEXT,
     product TEXT,
     started_date TEXT,

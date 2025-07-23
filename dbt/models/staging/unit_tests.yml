@@ -5,13 +5,17 @@ unit_tests:
     given:
       - input: source('revolut', 'personal')
         rows:
-          - {type: 'TRANSFER', product: 'Current', completed_date: '2025-01-01 00:00:00', amount: 100.0, currency: 'EUR'}
-          - {type: 'CARD_PAYMENT', product: 'Pocket', completed_date: '2025-01-02 00:00:00', amount: 100.0, currency: 'EUR'}
+          - {type: 'TRANSFER', product: 'Current', completed_date: '2025-01-01 00:00:00', amount: 100.0, currency: 'EUR', state: 'COMPLETED'}
+          - {type: 'CARD_PAYMENT', product: 'Pocket', completed_date: '2025-01-02 00:00:00', amount: 100.0, currency: 'EUR', state: 'COMPLETED'}
       - input: source('revolut', 'joint')
         rows:
-          - {type: 'TRANSFER', product: 'Joint', completed_date: '2025-01-01 00:00:00', amount: -100.0, currency: 'EUR'}
+          - {type: 'TRANSFER', product: 'Joint', completed_date: '2025-01-01 00:00:00', amount: -100.0, currency: 'EUR', state: 'COMPLETED'}
+      - input: source('revolut', 'spouse')
+        rows:
+          - {type: 'CARD_PAYMENT', product: 'Current', completed_date: '2025-01-02 00:00:00', amount: 100.0, currency: 'EUR', state: 'COMPLETED'}
     expect:
       rows:
-        - {product: 'Current', completed_date: '2025-01-01', amount: 100.0, currency: 'EUR', is_transfer: true}
-        - {product: 'Pocket', completed_date: '2025-01-02', amount: 100.0, currency: 'EUR', is_transfer: false}
-        - {product: 'Joint', completed_date: '2025-01-01', amount: -100.0, currency: 'EUR', is_transfer: true}
+        - {product: 'Current', completed_date: '2025-01-01', amount: 100.0, currency: 'EUR', state: 'COMPLETED', is_transfer: true}
+        - {product: 'Pocket', completed_date: '2025-01-02', amount: 100.0, currency: 'EUR', state: 'COMPLETED', is_transfer: false}
+        - {product: 'Joint', completed_date: '2025-01-01', amount: -100.0, currency: 'EUR', state: 'COMPLETED', is_transfer: true}
+        - {product: 'Current', completed_date: '2025-01-02', amount: 100.0, currency: 'EUR', state: 'COMPLETED', is_transfer: false}

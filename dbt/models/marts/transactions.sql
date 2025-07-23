@@ -2,11 +2,14 @@ with revolut as (
 
     select
         transaction_key,
-        'us' as country,
+        'IE' as country,
         'revolut' as source,
+        'Revolut' as bank,
+        'Bank' as account_type,
         product as account,
         completed_date as "date",
         "description",
+        category,
         amount,
         currency,
         "state" as "status",
@@ -20,17 +23,21 @@ bofa as (
 
     select
         transaction_key,
-        'ie' as country,
+        'US' as country,
         'bofa' as source,
+        bank_name as bank,
+        account_type,
         account_name as account,
         "date",
         coalesce(simple_description, original_description) as "description",
+        category,
         amount,
         currency,
         "status",
         is_transfer
     from
         {{ ref('stg_bofa__transactions') }}
+
 ),
 
 combined as (
@@ -47,6 +54,7 @@ translated as (
 
     select
         c.*,
+        cm.type as category_type,
         case
             when c.currency = 'EUR'
                 then
@@ -66,6 +74,14 @@ translated as (
         on
             c.currency = 'EUR'
             and c."date" = gf."date"
+    left join
+        {{ ref('category_mapping') }} as cm
+        on c.category = case 
+            when c.source = 'revolut'
+            then cm.revolut
+            when c.source = 'bofa'
+            then cm.bofa
+        end
 
 )
 
