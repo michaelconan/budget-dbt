@@ -1,0 +1,22 @@
+macros:
+  - name: get_transfer_transactions
+    description: "Get transactions representing transfers between accounts."
+    arguments:
+      - name: table_name
+        description: "The source table to query for transfer transactions."
+        type: string
+      - name: date_column
+        description: "The column containing the transaction date."
+        type: string
+      - name: account_column
+        description: "The column containing the account identifier."
+        type: string
+      - name: amount_column
+        description: "The column containing the transaction amount."
+        type: string
+  - name: categorise_keywords
+    description: "Categorise transactions based on keywords."
+    arguments:
+      - name: description_column
+        description: "The column with the description of the transaction to categorise."
+        type: string
