@@ -4,11 +4,19 @@ with transactions as (
 
     select
         "status",
-        -- convert date from US to ISO format
-        category,
         currency,
         amount,
-        account_name,
+        lower(category) as category,
+        substr(account_name, 1, instr(account_name, '-') - 2) as bank_name,
+        substr(
+            account_name, instr(account_name, '-') + 2,
+            instr(substr(account_name, instr(account_name,'-') + 1),'-') - 3
+        ) as account_type,
+        substr(account_name,
+            instr(account_name, '-') + instr(
+                substr(account_name,instr(account_name,'-') + 1),'-') + 2
+        ) as account_name,
+        -- convert date from US to ISO format
         concat(
             substr("date", 7, 4), '-',
             substr("date", 1, 2), '-',
@@ -57,6 +65,8 @@ flagged as (
         k.category,
         k.currency,
         k.amount,
+        cast(k.bank_name as text) as bank_name,
+        cast(k.account_type as text) as account_type,
         cast(k.account_name as text) as account_name,
         cast(k.date as text) as "date",
         k.original_description,

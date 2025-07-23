@@ -11,3 +11,23 @@ models:
         data_tests:
           - not_null
           - unique
+      - name: type
+        description: "The kind of the transaction"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: product
+        description: "The type of account in which the transaction was made"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: amount
+        description: "The amount of the transaction"
+        data_type: real
+        data_tests:
+          - not_null
+      - name: state
+        description: "Whether the transaction is posted or reverted"
+        data_type: text
+        data_tests:
+          - not_null

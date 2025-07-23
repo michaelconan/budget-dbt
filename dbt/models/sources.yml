@@ -7,13 +7,20 @@ revolut_columns: &revolut_columns
       - not_null
       - accepted_values:
           values:
-            - TRANSFER
-            - CARD_PAYMENT
-            - TAX
-            - REV_PAYMENT
             - ATM
-            - TOPUP
+            - CARD_PAYMENT
+            - CARD_REFUND
+            - CHARGE
+            - EXCHANGE
+            - FEE
             - INTEREST
+            - REFUND
+            - REV_PAYMENT
+            - REWARD
+            - TAX
+            - TEMP_BLOCK
+            - TOPUP
+            - TRANSFER
   - name: product
     description: "The type of account in which the transaction was made"
     data_type: text
@@ -39,6 +46,7 @@ revolut_columns: &revolut_columns
           values:
             - COMPLETED
             - REVERTED
+            - PENDING
 
 test_null_or_empty: &not_null_or_empty
   - not_null
@@ -47,12 +55,16 @@ test_null_or_empty: &not_null_or_empty
 sources:
   - name: revolut
     description: "Transaction data exported from Revolut"
-    database: etl
+    database: etl.db
     schema: main
     tables:
         - name: personal
           identifier: raw_revolut__personal
           description: "Personal account statement exported from Revolut"
+          columns: *revolut_columns
+        - name: spouse
+          identifier: raw_revolut__spouse
+          description: "Spouse account statement exported from Revolut"
           columns: *revolut_columns
         - name: joint
           identifier: raw_revolut__joint
@@ -60,7 +72,7 @@ sources:
           columns: *revolut_columns
   - name: bofa
     description: "Transaction data exported from Bank of America"
-    database: etl
+    database: etl.db
     schema: main
     tables:
       - name: activity

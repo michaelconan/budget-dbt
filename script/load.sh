@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # load.sh
 # Load transaction exports to SQLite raw tables for dbt
 
@@ -7,6 +9,7 @@ declare -A data_paths
 
 # table / data export path mapping
 data_paths["raw_revolut__personal"]="/revolut/personal"
+data_paths["raw_revolut__spouse"]="/revolut/spouse"
 data_paths["raw_revolut__joint"]="/revolut/joint"
 data_paths["raw_bofa__activity"]="/bofa"
 
