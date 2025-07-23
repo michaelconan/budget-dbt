@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "ETL",
+            "database": "./db/etl.db",
+            "onConnect": [
+                ".load C:\\Users\\micha\\.sqlpkg\\nalgeon\\crypto\\crypto.dll",
+                ".load C:\\Users\\micha\\.sqlpkg\\nalgeon\\regexp\\regexp.dll"
+            ]
+        }
+    ]
+}

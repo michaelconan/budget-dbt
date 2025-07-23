@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # schema.sh
 # Create SQLite raw tables to load transactional data for dbt
 

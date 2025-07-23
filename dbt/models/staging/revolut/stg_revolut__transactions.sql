@@ -18,6 +18,24 @@ with personal as (
 
 ),
 
+spouse as (
+
+    select
+        "type",
+        'Spouse' as product,
+        started_date,
+        completed_date,
+        "description",
+        amount,
+        fee,
+        currency,
+        "state",
+        balance
+    from
+        {{ source('revolut', 'spouse') }}
+
+),
+
 joint as (
 
     select
@@ -44,6 +62,9 @@ combined as (
     from personal
     union all
     select *
+    from spouse
+    union all
+    select *
     from joint
 
 ),
@@ -61,6 +82,9 @@ keyed as (
         *
     from
         combined
+    -- only include completed transactions (exclude pending or reverted)
+    where
+        "state" = 'COMPLETED'
 
 ),
 
@@ -92,7 +116,24 @@ flagged as (
         transfers as t
         on k.transaction_key = t.transaction_key
 
+),
+
+categorised as (
+
+    select
+        f.*,
+        -- use the mapped vendor category if it exists, otherwise use the categorisation macro
+        coalesce(
+            vc.category,
+            {{ categorise_keywords('f.description') }}
+        ) as category
+    from
+        flagged as f
+    left join
+        {{ ref('vendor_categories') }} as vc
+        on lower(f.description) like '%' || lower(vc.vendor) || '%'
+
 )
 
 select *
-from flagged
+from categorised

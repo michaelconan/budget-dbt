@@ -9,3 +9,18 @@ seeds:
         Date: str
         Close: float
       delimiter: ","
+  - name: vendor_categories
+    config:
+      quote_columns: false
+      column_types:
+        vendor: str
+        category: str
+      delimiter: ","
+  - name: category_mapping
+    config:
+      quote_columns: false
+      column_types:
+        type: str
+        bofa: str
+        revolut: str
+      delimiter: ","
