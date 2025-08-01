@@ -10,11 +10,13 @@ with transactions as (
         substr(account_name, 1, instr(account_name, '-') - 2) as bank_name,
         substr(
             account_name, instr(account_name, '-') + 2,
-            instr(substr(account_name, instr(account_name,'-') + 1),'-') - 3
+            instr(substr(account_name, instr(account_name, '-') + 1), '-') - 3
         ) as account_type,
-        substr(account_name,
+        substr(
+            account_name,
             instr(account_name, '-') + instr(
-                substr(account_name,instr(account_name,'-') + 1),'-') + 2
+                substr(account_name, instr(account_name, '-') + 1), '-'
+            ) + 2
         ) as account_name,
         -- convert date from US to ISO format
         concat(
