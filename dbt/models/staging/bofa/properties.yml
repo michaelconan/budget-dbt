@@ -11,3 +11,68 @@ models:
         data_tests:
           - not_null
           - unique
+      - name: status
+        description: "The posting state of the transaction"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: category
+        description: "The transaction category assigned by Bank of America"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: currency
+        description: "The currency of the transaction"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: amount
+        description: "The amount of the transaction"
+        data_type: real
+        data_tests:
+          - not_null
+      - name: bank_name
+        description: "The name of the bank extracted from account_name"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: account_type
+        description: "The type of account (e.g., Checking, Savings) extracted from account_name"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: account_name
+        description: "The clean account name without bank and type prefixes"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: date
+        description: "The transaction date in ISO format (YYYY-MM-DD)"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: original_description
+        description: "The original description provided by the transaction vendor"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: split_type
+        description: "The type of split for categorized transactions"
+        data_type: text
+      - name: user_description
+        description: "User-defined description for the transaction"
+        data_type: text
+      - name: memo
+        description: "Additional memo or notes for the transaction"
+        data_type: text
+      - name: classification
+        description: "Transaction classification assigned by Bank of America"
+        data_type: text
+      - name: simple_description
+        description: "Simplified description of the transaction"
+        data_type: text
+      - name: is_transfer
+        description: "Boolean flag indicating if this transaction is a transfer between accounts"
+        data_type: boolean
+        data_tests:
+          - not_null

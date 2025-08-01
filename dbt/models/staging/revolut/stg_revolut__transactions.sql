@@ -121,19 +121,45 @@ flagged as (
 categorised as (
 
     select
-        f.*,
+        f.transaction_key,
+        f.type,
+        f.product,
+        f.started_date,
+        f.completed_date,
+        f.description,
+        f.amount,
+        f.fee,
+        f.currency,
+        f.state,
+        f.balance,
+        f.is_transfer,
         -- use the mapped vendor category if it exists, otherwise use the categorisation macro
-        coalesce(
-            vc.category,
-            {{ categorise_keywords('f.description') }}
+        min(
+            coalesce(
+                vc.category,
+                {{ categorise_keywords('f.description') }}
+            )
         ) as category
     from
         flagged as f
     left join
         {{ ref('vendor_categories') }} as vc
         on lower(f.description) like '%' || lower(vc.vendor) || '%'
-
+    group by
+        f.transaction_key,
+        f.type,
+        f.product,
+        f.started_date,
+        f.completed_date,
+        f.description,
+        f.amount,
+        f.fee,
+        f.currency,
+        f.state,
+        f.balance,
+        f.is_transfer
 )
 
 select *
 from categorised
+order by completed_date, product
