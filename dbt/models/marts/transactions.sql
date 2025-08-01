@@ -58,19 +58,19 @@ translated as (
         case
             when c.currency = 'EUR'
                 then
-                    gf.close
+                    gf.rate
             else 1
         end as fx_rate,
         case
             when c.currency = 'EUR'
                 then
-                    c.amount * gf.close
+                    c.amount * gf.rate
             else c.amount
         end as amount_usd
     from
         combined as c
     left join
-        {{ ref('google_finance__eur_usd') }} as gf
+        {{ ref('fx_rates') }} as gf
         on
             c.currency = 'EUR'
             and c."date" = gf."date"
