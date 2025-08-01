@@ -92,7 +92,13 @@ keyed as (
 
 transfers as (
 
-    {{ get_transfer_transactions('keyed', 'completed_date', 'product', 'amount') }}),
+    {{
+        get_transfer_transactions(
+            'keyed', 'completed_date', 'product', 'amount'
+        )
+    }}
+
+),
 
 -- 5. Select all transactions and indicate if they are transfers
 flagged as (
@@ -133,7 +139,8 @@ categorised as (
         f.state,
         f.balance,
         f.is_transfer,
-        -- use the mapped vendor category if it exists, otherwise use the categorisation macro
+        -- use the mapped vendor category if it exists, otherwise use the
+        -- categorisation macro
         min(
             coalesce(
                 vc.category,
