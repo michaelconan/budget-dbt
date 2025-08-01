@@ -76,11 +76,11 @@ translated as (
             and c."date" = gf."date"
     left join
         {{ ref('category_mapping') }} as cm
-        on c.category = case 
+        on c.category = case
             when c.source = 'revolut'
-            then cm.revolut
+                then cm.revolut
             when c.source = 'bofa'
-            then cm.bofa
+                then cm.bofa
         end
 
 )
