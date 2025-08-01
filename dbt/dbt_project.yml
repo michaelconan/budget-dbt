@@ -23,16 +23,114 @@ models:
       +materialized: table
 
 vars:
+
   # Keywords by category to use for Revolut categorisation
   categories:
-    cash: ['cash']
-    donation: ['foundation']
-    entertainment: ['theatre', 'museum', 'cathedral']
-    groceries: ['butcher']
-    health: ['dental', 'pharmacy']
-    income: ['payment from']
-    interest: ['interest']
-    pubs: ['bar', 'pub', 'lounge', 'club']
-    restaurants: ['coffee', 'food', 'bistro', 'café', 'cafe', 'restaura', 'grill', 'pizz', 'tavern', 'diner']
-    transfers: ['transfer', 'exchange to']
-    travel: ['bus', 'air', 'rail', 'train', 'hotel', 'ferry', 'taxi']
+
+    donation:
+      - charity
+      - fund
+      - appeal
+      - trust
+      - foundation
+
+    entertainment:
+      - theatre
+      - museum
+      - cathedral
+      - arena
+      - stadium
+      - concert
+      - festival
+      - cinema
+      - gallery
+      - castle
+      - distillery
+
+    groceries:
+      - butcher
+      - market
+      - bakery
+
+    health:
+      - dental
+      - pharmacy
+      - clinic
+      - optician
+      - apothecary
+      - wellness
+      - fitness
+      - gym
+      - medical
+      - vitamin
+
+    income:
+      - payment from
+      - salary
+      - wage
+      - pension
+      - refund
+      - payment
+      - commission
+
+    interest:
+      - interest
+      - dividend
+      - yield
+      - returns
+
+    pubs:
+      - bar
+      - pub
+      - lounge
+      - club
+      - tavern
+      - inn
+      - brewery
+
+    restaurants:
+      - coffee
+      - food
+      - bistro
+      - café
+      - cafe
+      - restaura
+      - grill
+      - pizz
+      - diner
+      - eatery
+      - takeaway
+
+    transfers:
+      - transfer
+      - exchange
+      - wire
+      - deposit
+      - withdraw
+
+    travel:
+      - bus
+      - air
+      - rail
+      - train
+      - hotel
+      - ferry
+      - taxi
+      - booking
+      - transport
+      - shuttle
+      - ride
+      - rental
+      - airport
+      - cruise
+      - reservation
+
+    cash:
+      - cash
+
+    utilities:
+      - energ
+      - electric
+      - utilit
+      - water
+      - internet

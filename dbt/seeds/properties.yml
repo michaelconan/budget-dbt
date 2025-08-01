@@ -3,20 +3,46 @@ version: 2
 
 seeds:
   - name: google_finance__eur_usd
+    description: "Historical EUR to USD exchange rates from Google Finance"
     config:
       quote_columns: false
       column_types:
         Date: str
         Close: float
       delimiter: ","
+    columns:
+      - name: Date
+        description: "The date of the exchange rate in YYYY-MM-DD format"
+        data_type: text
+        data_tests:
+          - not_null
+          - unique
+      - name: Close
+        description: "The closing EUR to USD exchange rate for the date"
+        data_type: real
+        data_tests:
+          - not_null
   - name: vendor_categories
+    description: "Mapping of transaction vendors to their assigned categories"
     config:
       quote_columns: false
       column_types:
-        vendor: str
         category: str
+        vendor: str
       delimiter: ","
+    columns:
+      - name: category
+        description: "The category to assign to transactions from this vendor"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: vendor
+        description: "The vendor name or description pattern to match"
+        data_type: text
+        data_tests:
+          - not_null
   - name: category_mapping
+    description: "Mapping between source system categories and standardized category types"
     config:
       quote_columns: false
       column_types:
@@ -24,3 +50,15 @@ seeds:
         bofa: str
         revolut: str
       delimiter: ","
+    columns:
+      - name: type
+        description: "The standardized category type (e.g., income, expense, transfer)"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: bofa
+        description: "The Bank of America category that maps to this type"
+        data_type: text
+      - name: revolut
+        description: "The Revolut category that maps to this type"
+        data_type: text

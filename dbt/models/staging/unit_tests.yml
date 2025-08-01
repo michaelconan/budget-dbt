@@ -12,10 +12,13 @@ unit_tests:
           - {type: 'TRANSFER', product: 'Joint', completed_date: '2025-01-01 00:00:00', amount: -100.0, currency: 'EUR', state: 'COMPLETED'}
       - input: source('revolut', 'spouse')
         rows:
-          - {type: 'CARD_PAYMENT', product: 'Current', completed_date: '2025-01-02 00:00:00', amount: 100.0, currency: 'EUR', state: 'COMPLETED'}
+          - {type: 'CARD_PAYMENT', product: 'Current', completed_date: '2025-01-03 00:00:00', amount: 100.0, currency: 'EUR', state: 'COMPLETED'}
+      - input: ref('vendor_categories')
+        rows:
+          - {vendor: 'test', category: 'test'}
     expect:
       rows:
         - {product: 'Current', completed_date: '2025-01-01', amount: 100.0, currency: 'EUR', state: 'COMPLETED', is_transfer: true}
-        - {product: 'Pocket', completed_date: '2025-01-02', amount: 100.0, currency: 'EUR', state: 'COMPLETED', is_transfer: false}
         - {product: 'Joint', completed_date: '2025-01-01', amount: -100.0, currency: 'EUR', state: 'COMPLETED', is_transfer: true}
-        - {product: 'Current', completed_date: '2025-01-02', amount: 100.0, currency: 'EUR', state: 'COMPLETED', is_transfer: false}
+        - {product: 'Pocket', completed_date: '2025-01-02', amount: 100.0, currency: 'EUR', state: 'COMPLETED', is_transfer: false}
+        - {product: 'Spouse', completed_date: '2025-01-03', amount: 100.0, currency: 'EUR', state: 'COMPLETED', is_transfer: false}
