@@ -32,9 +32,32 @@ revolut_columns: &revolut_columns
             - Pocket
             - Savings
             - Deposit
+  - name: started_date
+    description: "The date and time when the transaction was initiated"
+    data_type: text
+    data_tests:
+      - not_null
+  - name: completed_date
+    description: "The date and time when the transaction was completed"
+    data_type: text
+    data_tests:
+      - not_null
+  - name: description
+    description: "The transaction description provided by Revolut"
+    data_type: text
+    data_tests:
+      - not_null
   - name: amount
     description: "The amount of the transaction"
     data_type: real
+    data_tests:
+      - not_null
+  - name: fee
+    description: "Any fee charged for the transaction"
+    data_type: real
+  - name: currency
+    description: "The currency code of the transaction"
+    data_type: text
     data_tests:
       - not_null
   - name: state
@@ -47,6 +70,9 @@ revolut_columns: &revolut_columns
             - COMPLETED
             - REVERTED
             - PENDING
+  - name: balance
+    description: "The account balance after the transaction"
+    data_type: real
 
 test_null_or_empty: &not_null_or_empty
   - not_null
@@ -107,3 +133,21 @@ sources:
             description: "The account in which the transaction occurred"
             data_type: text
             data_tests: *not_null_or_empty
+          - name: category
+            description: "The transaction category assigned by Bank of America"
+            data_type: text
+          - name: split_type
+            description: "The type of split for categorized transactions"
+            data_type: text
+          - name: user_description
+            description: "User-defined description for the transaction"
+            data_type: text
+          - name: memo
+            description: "Additional memo or notes for the transaction"
+            data_type: text
+          - name: classification
+            description: "Transaction classification assigned by Bank of America"
+            data_type: text
+          - name: simple_description
+            description: "Simplified description of the transaction"
+            data_type: text

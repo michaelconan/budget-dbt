@@ -21,9 +21,32 @@ models:
         data_type: text
         data_tests:
           - not_null
+      - name: started_date
+        description: "The date when the transaction was initiated (ISO format)"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: completed_date
+        description: "The date when the transaction was completed (ISO format)"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: description
+        description: "The transaction description provided by Revolut"
+        data_type: text
+        data_tests:
+          - not_null
       - name: amount
         description: "The amount of the transaction"
         data_type: real
+        data_tests:
+          - not_null
+      - name: fee
+        description: "Any fee charged for the transaction"
+        data_type: real
+      - name: currency
+        description: "The currency code of the transaction"
+        data_type: text
         data_tests:
           - not_null
       - name: state
@@ -31,3 +54,16 @@ models:
         data_type: text
         data_tests:
           - not_null
+      - name: balance
+        description: "The account balance after the transaction"
+        data_type: real
+        data_tests:
+          - not_null
+      - name: is_transfer
+        description: "Boolean flag indicating if this transaction is a transfer between accounts"
+        data_type: boolean
+        data_tests:
+          - not_null
+      - name: category
+        description: "The assigned category for the transaction based on description matching"
+        data_type: text
