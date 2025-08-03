@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: category_audit
+    description: "Audit model that identifies transactions with missing categories (TBD) and existing vendor-category mappings"
+    columns:
+      - name: category
+        description: "The assigned category for the vendor or 'TBD' for uncategorized transactions"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: vendor
+        description: "The vendor name or transaction description that needs categorization"
+        data_type: text
+        data_tests:
+          - not_null

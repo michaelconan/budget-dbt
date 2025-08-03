@@ -3,16 +3,28 @@
 with personal as (
 
     select
-        "type",
+        type,
         product,
         started_date,
         completed_date,
-        "description",
-        amount,
-        fee,
+        description,
+        -- Parse amount from string
+        CASE 
+            WHEN amount = '' OR amount IS NULL THEN 0.0
+            ELSE CAST(amount AS DOUBLE)
+        END as amount,
+        -- Parse fee from string
+        CASE 
+            WHEN fee = '' OR fee IS NULL THEN 0.0
+            ELSE CAST(fee AS DOUBLE)
+        END as fee,
         currency,
-        "state",
-        balance
+        state,
+        -- Parse balance from string
+        CASE 
+            WHEN balance = '' OR balance IS NULL THEN 0.0
+            ELSE CAST(balance AS DOUBLE)
+        END as balance
     from
         {{ source('revolut', 'personal') }}
 
@@ -21,16 +33,28 @@ with personal as (
 spouse as (
 
     select
-        "type",
+        type,
         'Spouse' as product,
         started_date,
         completed_date,
-        "description",
-        amount,
-        fee,
+        description,
+        -- Parse amount from string
+        CASE 
+            WHEN amount = '' OR amount IS NULL THEN 0.0
+            ELSE CAST(amount AS DOUBLE)
+        END as amount,
+        -- Parse fee from string
+        CASE 
+            WHEN fee = '' OR fee IS NULL THEN 0.0
+            ELSE CAST(fee AS DOUBLE)
+        END as fee,
         currency,
-        "state",
-        balance
+        state,
+        -- Parse balance from string
+        CASE 
+            WHEN balance = '' OR balance IS NULL THEN 0.0
+            ELSE CAST(balance AS DOUBLE)
+        END as balance
     from
         {{ source('revolut', 'spouse') }}
 
@@ -39,16 +63,28 @@ spouse as (
 joint as (
 
     select
-        "type",
+        type,
         'Joint' as product,
         started_date,
         completed_date,
-        "description",
-        amount,
-        fee,
+        description,
+        -- Parse amount from string
+        CASE 
+            WHEN amount = '' OR amount IS NULL THEN 0.0
+            ELSE CAST(amount AS DOUBLE)
+        END as amount,
+        -- Parse fee from string
+        CASE 
+            WHEN fee = '' OR fee IS NULL THEN 0.0
+            ELSE CAST(fee AS DOUBLE)
+        END as fee,
         currency,
-        "state",
-        balance
+        state,
+        -- Parse balance from string
+        CASE 
+            WHEN balance = '' OR balance IS NULL THEN 0.0
+            ELSE CAST(balance AS DOUBLE)
+        END as balance
     from
         {{ source('revolut', 'joint') }}
 
@@ -84,7 +120,7 @@ keyed as (
         combined
     -- only include completed transactions (exclude pending or reverted)
     where
-        "state" = 'COMPLETED'
+        state = 'COMPLETED'
 
 ),
 
@@ -104,11 +140,11 @@ transfers as (
 flagged as (
 
     select
-        cast(k.transaction_key as text) as transaction_key,
+        cast(k.transaction_key as varchar) as transaction_key,
         k.type,
-        cast(k.product as text) as product,
-        cast(substr(k.started_date, 1, 10) as text) as started_date,
-        cast(substr(k.completed_date, 1, 10) as text) as completed_date,
+        cast(k.product as varchar) as product,
+        cast(substr(k.started_date, 1, 10) as date) as started_date,
+        cast(substr(k.completed_date, 1, 10) as date) as completed_date,
         k.description,
         k.amount,
         k.fee,

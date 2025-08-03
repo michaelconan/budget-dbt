@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: fx_rates
+    description: "Complete daily EUR to USD exchange rates with forward-fill for missing dates"
+    columns:
+      - name: date
+        description: "The date of the foreign exchange rate"
+        data_type: date
+        data_tests:
+          - not_null
+          - unique
+      - name: rate
+        description: "The EUR to USD exchange rate for the given date"
+        data_type: double
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0.5
+              max_value: 2.0
+              where: "date >= '2023-01-01'"

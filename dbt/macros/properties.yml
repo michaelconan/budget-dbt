@@ -20,12 +20,3 @@ macros:
       - name: description_column
         description: "The column with the description of the transaction to categorise."
         type: string
-  - name: lite_date_spine
-    description: "Generate a date spine (series of dates) between start_date and end_date."
-    arguments:
-      - name: start_date
-        description: "The start date for the date spine (inclusive)."
-        type: string
-      - name: end_date
-        description: "The end date for the date spine (inclusive)."
-        type: string

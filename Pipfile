@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 dbt-core = "*"
-dbt-sqlite = "*"
+dbt-duckdb = "*"
 
 [dev-packages]
 sqlfluff = "*"

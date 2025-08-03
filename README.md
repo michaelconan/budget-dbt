@@ -1,111 +1,174 @@
 # budget-dbt
 
-Project using data build tool (dbt) to load, normalize, and analyze financial transactions with SQLite.
+A comprehensive budget tracking and analysis system using dbt and DuckDB to process transaction data from multiple banking sources.
 
-## Purpose
+## 🚀 Migration to DuckDB
 
-The project is designed to standardize transactional data across different bank systems.
+This project has been migrated from SQLite to DuckDB for improved performance, better SQL compatibility, and enhanced analytical capabilities.
 
-The following key transformations are performed:
-- **Unique Keys**: Create hashed surrogate keys for predictable unique transaction identifiers.
-- **Transfer Flags**: Identify transactions representing transfers between accounts to exclude them from analysis.
-- **Currency Conversion**: Apply Google Finance foreign exchange rates for standard monetary unit of analysis.
+### Key Improvements
 
-## Project Structure
+- **Performance**: DuckDB provides significantly better query performance for analytical workloads
+- **SQL Compatibility**: Full SQL standard support with modern SQL features
+- **Parallel Processing**: Multi-threaded execution for faster data processing
+- **Memory Management**: Efficient memory usage with configurable limits
+- **Native Functions**: Built-in support for date functions, window functions, and more
 
-- **data**: Contains raw data files organized by source (e.g., bofa, revolut).
-- **db**: SQLite database files.
-- **dbt**:
-  - `models`: Contains SQL models for data transformations.
-  - `macros`: Common SQL functions used across models.
-  - `seeds`: CSV files for basic data inputs.
-  - `tests`: Generic and custom tests for data validation.
-- **ddl**: SQL schema files for raw data tables.
-- **script**: Scripts for data loading and other automation tasks.
-- **docs**: Directory for generated documentation.
-  
-## Setup
+## 📋 Prerequisites
 
-### Prerequisites
-
-- SQLite CLI, which can be installed using:
-
-  ```sh
-  winget install --id SQLite.SQLite
+- **DuckDB**: Install DuckDB CLI and Python bindings
+  ```bash
+  # Install DuckDB CLI
+  winget install duckdb.cli
   ```
 
-- SQLite extensions for cryptography and regular expressions:
+- **dbt**: Install dbt with DuckDB adapter
+  ```bash
+  make install
+  ```
 
-  1. Install the [SQLPkg CLI](https://github.com/nalgeon/sqlpkg-cli).
-  2. Install the crypto and regexp extensions:
+- **Python**: Python 3.8+ with pip
 
-     ```sh
-     sqlpkg install nalgeon/crypto nalgeon/regexp
-     ```
+## 🏗️ Project Structure
 
-  3. Add extension paths to the dbt `profiles.yml` file:
+```
+budget-dbt/
+├── data/                   # Raw CSV transaction data
+│   ├── bofa/               # Bank of America exports
+│   └── revolut/            # Revolut exports
+│       ├── joint/
+│       ├── personal/
+│       └── spouse/
+├── db/                     # DuckDB database files
+├── dbt/                    # dbt project
+│   ├── models/             # Data models
+│   │   ├── staging/        # Staging models
+│   │   ├── intermediate/   # Intermediate models
+│   │   └── marts/          # Mart models
+│   ├── macros/             # Custom macros
+│   ├── seeds/              # Static data files
+│   └── tests/              # Custom data tests
+├── ddl/                    # Database schema definitions
+├── script/                 # Utility scripts
+└── docs/                   # Generated documentation
+```
 
-     ```yaml
-     dev:
-       extensions:
-         - '~/.sqlpkg/nalgeon/crypto/crypto.dll'
-         - '~/.sqlpkg/nalgeon/regexp/regexp.dll'
-     ```
+## 🚀 Quick Start
 
-  4. Add the extensions to the `~/.sqliterc` file:
-
-     ```sh
-     .headers on
-     .load C:\Users\{USER}\.sqlpkg\nalgeon\crypto\crypto.dll
-     .load C:\Users\{USER}\.sqlpkg\nalgeon\regexp\regexp.dll
-     ```
-
-### Installation
-
-1. Clone the repository and navigate to the project directory.
-2. Install Python dependencies using Pipenv:
-
-   ```sh
-   pipenv install --dev
+1. **Initialize the database**:
+   ```bash
+   make init
    ```
 
-3. Create tables and load data:
-
-   ```sh
-   make setup-db
+2. **Load transaction data**:
+   ```bash
+   make load
    ```
 
-4. Run dbt models:
+3. **Install dbt dependencies**:
+   ```bash
+   make dbt-deps
+   ```
 
-   ```sh
+4. **Run the data pipeline**:
+   ```bash
    make dbt-run
    ```
 
-## Approach
+5. **Run tests**:
+   ```bash
+   make dbt-test
+   ```
 
-- **Data Loading**: Raw data is loaded into SQLite tables using `script/load.sh`.
-- **Data Transformation**: dbt models in `dbt/models` transform loaded data into meaningful insights.
-- **Testing**: dbt tests are used for validating data consistency.
-- **Documentation**: Automated using GitHub Actions with results stored in the `docs` directory.
+## 📊 Data Sources
 
-## Usage
+### Revolut
+- **Personal Account**: Individual transaction data
+- **Spouse Account**: Partner's transaction data  
+- **Joint Account**: Shared account transactions
 
-- **Quick Development Cycle**:
+### Bank of America
+- **Activity Data**: Transaction exports from "My Financial Picture"
 
-  ```sh
-  make dev
-  ```
+## 🔧 Configuration
 
-- **Full Data Refresh**:
+### Database Settings
+- **Database**: `db/etl.duckdb`
+- **Memory Limit**: 2GB (configurable in `profiles.yml`)
+- **Threads**: 4 (configurable in `profiles.yml`)
 
-  ```sh
-  make refresh
-  ```
+### dbt Configuration
+- **Profile**: `budget_dbt`
+- **Target**: `dev`
+- **Materialization**: Views for staging, tables for marts
 
-- **Generating Documentation**:
-  
-  Documentation is auto-generated and deployed using GitHub Actions.
+## 📈 Data Models
 
----
+### Staging Layer
+- `fx_rates`: Historical EUR/USD exchange rates
+- `stg_revolut__transactions`: Cleaned Revolut transaction data
+- `stg_bofa__transactions`: Cleaned Bank of America transaction data
 
-To maintain consistency, check out the available Makefile targets for automation tasks, like `install`, `dbt-build`, `dbt-clean`, etc.
+### Intermediate Layer
+- `category_audit`: Categorised and new vendors to further categorise
+
+### Mart Layer
+- `transactions`: Combined transaction data with FX conversion
+
+## 🧪 Testing
+
+The project includes comprehensive data tests:
+
+- **Column tests**: Not null, unique, accepted values
+- **Custom tests**: Regex pattern matching, business logic validation
+- **Generic tests**: Cross-column validation
+
+Run tests with:
+```bash
+make dbt-test
+```
+
+## 📚 Documentation
+
+Generate documentation:
+```bash
+make docs
+```
+
+## 🔄 Workflows
+
+### Development
+```bash
+make dev  # Run models and tests
+```
+
+### Full Setup
+```bash
+make full-setup  # Complete pipeline setup
+```
+
+### Clean Slate
+```bash
+make clean  # Remove all artifacts
+```
+
+## 🛠️ Custom Macros
+
+### `categorise_keywords`
+Keyword-based transaction categorization using configurable category mappings.
+
+### `get_transfer_transactions`
+Identifies transfer transactions between accounts.
+
+## 🔍 Data Quality
+
+### Validation Rules
+- Transaction amounts must be numeric
+- Dates must be in valid format
+- Required fields must not be null
+- Category values must be from accepted list
+
+### Monitoring
+- Automated data quality checks
+- Business rule validation
+- Cross-source consistency checks
