@@ -3,9 +3,13 @@
 with transactions as (
 
     select
-        "status",
-        currency,
-        amount,
+        status,
+        currency as currency,
+        -- Parse amount from string, removing commas and quotes
+        CASE 
+            WHEN amount = '' OR amount IS NULL THEN 0.0
+            ELSE CAST(REPLACE(REPLACE(amount, ',', ''), '"', '') AS DOUBLE)
+        END as amount,
         lower(category) as category,
         substr(account_name, 1, instr(account_name, '-') - 2) as bank_name,
         substr(
@@ -18,12 +22,8 @@ with transactions as (
                 substr(account_name, instr(account_name, '-') + 1), '-'
             ) + 2
         ) as account_name,
-        -- convert date from US to ISO format
-        concat(
-            substr("date", 7, 4), '-',
-            substr("date", 1, 2), '-',
-            substr("date", 4, 2)
-        ) as "date",
+        -- parse date from US format (MM/DD/YYYY) directly to DATE
+        strptime(date, '%m/%d/%Y') as "date",
         trim(original_description) as original_description,
         nullif(trim(split_type), '') as split_type,
         nullif(trim(user_description), '') as user_description,
@@ -62,15 +62,15 @@ transfers as (
 flagged as (
 
     select
-        cast(k.transaction_key as text) as transaction_key,
+        cast(k.transaction_key as varchar) as transaction_key,
         k.status,
         k.category,
         k.currency,
         k.amount,
-        cast(k.bank_name as text) as bank_name,
-        cast(k.account_type as text) as account_type,
-        cast(k.account_name as text) as account_name,
-        cast(k.date as text) as "date",
+        cast(k.bank_name as varchar) as bank_name,
+        cast(k.account_type as varchar) as account_type,
+        cast(k.account_name as varchar) as account_name,
+        k.date,
         k.original_description,
         k.split_type,
         k.user_description,
