@@ -4,6 +4,7 @@
 # Database paths
 DB_PATH = db/etl.duckdb
 DATA_DIR = data
+DOCS_DIR = docs
 SEEDS_DIR = dbt/seeds
 TMP_PROMPT = prompt.txt
 
