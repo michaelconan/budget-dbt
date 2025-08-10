@@ -7,19 +7,19 @@ seeds:
     config:
       quote_columns: false
       column_types:
-        Date: str
-        Close: float
+        Date: varchar
+        Close: double
       delimiter: ","
     columns:
       - name: Date
         description: "The date of the exchange rate in YYYY-MM-DD format"
-        data_type: text
+        data_type: varchar
         data_tests:
           - not_null
           - unique
       - name: Close
         description: "The closing EUR to USD exchange rate for the date"
-        data_type: real
+        data_type: double
         data_tests:
           - not_null
   - name: vendor_categories
@@ -27,18 +27,18 @@ seeds:
     config:
       quote_columns: false
       column_types:
-        category: str
-        vendor: str
+        category: varchar
+        vendor: varchar
       delimiter: ","
     columns:
       - name: category
         description: "The category to assign to transactions from this vendor"
-        data_type: text
+        data_type: varchar
         data_tests:
           - not_null
       - name: vendor
         description: "The vendor name or description pattern to match"
-        data_type: text
+        data_type: varchar
         data_tests:
           - not_null
   - name: category_mapping
@@ -46,19 +46,19 @@ seeds:
     config:
       quote_columns: false
       column_types:
-        type: str
-        bofa: str
-        revolut: str
+        type: varchar
+        bofa: varchar
+        revolut: varchar
       delimiter: ","
     columns:
       - name: type
         description: "The standardized category type (e.g., income, expense, transfer)"
-        data_type: text
+        data_type: varchar
         data_tests:
           - not_null
       - name: bofa
         description: "The Bank of America category that maps to this type"
-        data_type: text
+        data_type: varchar
       - name: revolut
         description: "The Revolut category that maps to this type"
-        data_type: text
+        data_type: varchar

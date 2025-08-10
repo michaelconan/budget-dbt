@@ -2,7 +2,7 @@
 revolut_columns: &revolut_columns
   - name: type
     description: "The kind of the transaction"
-    data_type: text
+    data_type: varchar
     data_tests:
       - not_null
       - accepted_values:
@@ -23,7 +23,7 @@ revolut_columns: &revolut_columns
             - TRANSFER
   - name: product
     description: "The type of account in which the transaction was made"
-    data_type: text
+    data_type: varchar
     data_tests:
       - not_null
       - accepted_values:
@@ -34,35 +34,37 @@ revolut_columns: &revolut_columns
             - Deposit
   - name: started_date
     description: "The date and time when the transaction was initiated"
-    data_type: text
+    data_type: varchar
     data_tests:
       - not_null
   - name: completed_date
     description: "The date and time when the transaction was completed"
-    data_type: text
+    data_type: varchar
     data_tests:
-      - not_null
+      - not_null:
+          config:
+            where: "state = 'COMPLETED'"
   - name: description
     description: "The transaction description provided by Revolut"
-    data_type: text
+    data_type: varchar
     data_tests:
       - not_null
   - name: amount
     description: "The amount of the transaction"
-    data_type: real
+    data_type: varchar
     data_tests:
       - not_null
   - name: fee
     description: "Any fee charged for the transaction"
-    data_type: real
+    data_type: varchar
   - name: currency
     description: "The currency code of the transaction"
-    data_type: text
+    data_type: varchar
     data_tests:
       - not_null
   - name: state
     description: "Whether the transaction is posted or reverted"
-    data_type: text
+    data_type: varchar
     data_tests:
       - not_null
       - accepted_values:
@@ -72,7 +74,7 @@ revolut_columns: &revolut_columns
             - PENDING
   - name: balance
     description: "The account balance after the transaction"
-    data_type: real
+    data_type: varchar
 
 test_null_or_empty: &not_null_or_empty
   - not_null
@@ -81,7 +83,7 @@ test_null_or_empty: &not_null_or_empty
 sources:
   - name: revolut
     description: "Transaction data exported from Revolut"
-    database: etl.db
+    database: etl
     schema: main
     tables:
         - name: personal
@@ -98,56 +100,57 @@ sources:
           columns: *revolut_columns
   - name: bofa
     description: "Transaction data exported from Bank of America"
-    database: etl.db
+    database: etl
     schema: main
     tables:
       - name: activity
         identifier: raw_bofa__activity
         description: "My Financial Picture activity data exported from Bank of America"
+        data_tests:
+          - dbt_utils.expression_is_true:
+              expression: "try_strptime(date, '%m/%d/%Y') is not null"
         columns:
           - name: date
             description: "The date on which the transaction was completed"
-            data_type: text
+            data_type: varchar
             data_tests:
               - not_null
               - dbt_utils.not_empty_string
-              - column_values_match_regex:
-                  pattern: "[0-9]{2}/[0-9]{2}/[0-9]{4}"
           - name: status
             description: "The posting state of the transaction"
-            data_type: text
+            data_type: varchar
             data_tests: *not_null_or_empty
           - name: original_description
             description: "The description provided by the transaction vendor"
-            data_type: text
+            data_type: varchar
             data_tests: *not_null_or_empty
           - name: amount
             description: "The amount of the transaction"
-            data_type: real
+            data_type: varchar
             data_tests: *not_null_or_empty
           - name: currency
             description: "The currency of the transaction"
-            data_type: text
+            data_type: varchar
             data_tests: *not_null_or_empty
           - name: account_name
             description: "The account in which the transaction occurred"
-            data_type: text
+            data_type: varchar
             data_tests: *not_null_or_empty
           - name: category
             description: "The transaction category assigned by Bank of America"
-            data_type: text
+            data_type: varchar
           - name: split_type
             description: "The type of split for categorized transactions"
-            data_type: text
+            data_type: varchar
           - name: user_description
             description: "User-defined description for the transaction"
-            data_type: text
+            data_type: varchar
           - name: memo
             description: "Additional memo or notes for the transaction"
-            data_type: text
+            data_type: varchar
           - name: classification
             description: "Transaction classification assigned by Bank of America"
-            data_type: text
+            data_type: varchar
           - name: simple_description
             description: "Simplified description of the transaction"
-            data_type: text
+            data_type: varchar

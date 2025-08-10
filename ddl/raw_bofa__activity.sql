@@ -4,16 +4,16 @@
 -- ====================================
 DROP TABLE IF EXISTS raw_bofa__activity;
 CREATE TABLE raw_bofa__activity (
-    "status" TEXT,
-    "date" TEXT,
-    original_description TEXT,
-    split_type TEXT,
-    category TEXT,
-    currency TEXT,
-    amount FLOAT,
-    user_description TEXT,
-    memo TEXT,
-    classification TEXT,
-    account_name TEXT,
-    simple_description TEXT
+    status VARCHAR,
+    date VARCHAR,
+    original_description VARCHAR,
+    split_type VARCHAR,
+    category VARCHAR,
+    currency VARCHAR,
+    amount VARCHAR,
+    user_description VARCHAR,
+    memo VARCHAR,
+    classification VARCHAR,
+    account_name VARCHAR,
+    simple_description VARCHAR
 );

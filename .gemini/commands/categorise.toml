@@ -1,0 +1,16 @@
+description="Apply budget categories to new vendor transactions"
+prompt="""
+Update the seed file at `dbt/seeds/vendor_categories.csv` to replace any vendor
+labelled as category "TBD" with one of the categories defined in the variables
+within `dbt/dbt_project.yml`.
+
+If multiple vendors use common keywords and belong in the same category,
+apply the following logic:
+
+1. If a distinct and meaningful keyword can be used for these vendors, remove
+   the vendors from the `vendor_categories.csv` file and add the keywords to 
+   the appropriate list within the vars in `dbt_projects.yml`.
+2. If a partial vendor name (generally multiple words) can be used for these vendors,
+   update the `vendor_categories.csv` file with the category and partial vendor name,
+   then remove other lines in the file with the vendor names to consolidate.
+"""
