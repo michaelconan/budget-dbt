@@ -4,6 +4,7 @@ data/**/*.csv
 dbt/seeds/**/*.csv
 # SQLite database files
 db/*.db
+db/*.duckdb
 # Python venv
 .venv
 # Log files

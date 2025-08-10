@@ -2,6 +2,6 @@
 
     select *
     from {{ model }}
-    where not regexp_like({{ column_name }}, '{{ pattern }}')
+    where not regexp_matches({{ column_name }}, '{{ pattern }}')
 
 {% endtest %}
