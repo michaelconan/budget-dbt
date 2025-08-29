@@ -7,6 +7,7 @@ revolut_columns: &revolut_columns
       - not_null
       - accepted_values:
           values:
+            # Original UPPER_CASE format
             - ATM
             - CARD_PAYMENT
             - CARD_REFUND
@@ -21,6 +22,15 @@ revolut_columns: &revolut_columns
             - TEMP_BLOCK
             - TOPUP
             - TRANSFER
+            # New Title Case format (newer Revolut exports)
+            - Card Payment
+            - Card Refund
+            - Charge
+            - Exchange
+            - Interest
+            - Rev Payment
+            - Topup
+            - Transfer
   - name: product
     description: "The type of account in which the transaction was made"
     data_type: varchar
