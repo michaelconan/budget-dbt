@@ -8,7 +8,7 @@
         {{ table_name }} as t2
         on
             t1.{{ date_column }} = t2.{{ date_column }}
-            and t1.{{ amount_column }} = -1 * t2.{{ amount_column }}
+            and cast(t1.{{ amount_column }} as double) = -1 * cast(t2.{{ amount_column }} as double)
             and t1.{{ account_column }} != t2.{{ account_column }}
     group by 
         t1.transaction_key

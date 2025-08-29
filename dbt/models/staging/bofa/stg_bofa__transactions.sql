@@ -3,9 +3,9 @@
 with transactions as (
 
     select
-        "status",
+        status,
         currency,
-        amount,
+        cast(replace(amount, ',', '') as double) as amount,
         lower(category) as category,
         substr(account_name, 1, instr(account_name, '-') - 2) as bank_name,
         substr(
@@ -20,10 +20,10 @@ with transactions as (
         ) as account_name,
         -- convert date from US to ISO format
         concat(
-            substr("date", 7, 4), '-',
-            substr("date", 1, 2), '-',
-            substr("date", 4, 2)
-        ) as "date",
+            substr(date, 7, 4), '-',
+            substr(date, 1, 2), '-',
+            substr(date, 4, 2)
+        ) as date,
         trim(original_description) as original_description,
         nullif(trim(split_type), '') as split_type,
         nullif(trim(user_description), '') as user_description,
@@ -70,7 +70,7 @@ flagged as (
         cast(k.bank_name as text) as bank_name,
         cast(k.account_type as text) as account_type,
         cast(k.account_name as text) as account_name,
-        cast(k.date as text) as "date",
+        cast(k.date as text) as date,
         k.original_description,
         k.split_type,
         k.user_description,
