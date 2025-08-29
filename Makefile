@@ -60,6 +60,12 @@ dbt-run:
 	@echo "Running dbt models..."
 	$(PIPENV) dbt run
 
+# Run dbt seed
+.PHONY: dbt-seed
+dbt-seed:
+	@echo "Running dbt seed..."
+	$(PIPENV) dbt seed
+
 # Run dbt tests
 .PHONY: dbt-test
 dbt-test:
@@ -108,7 +114,7 @@ fix-lint: ## Auto-fix and lint SQL files
 
 # Data refresh
 .PHONY: refresh
-refresh: load dbt-deps dbt-run
+refresh: load dbt-deps dbt-seed dbt-run dbt-test
 	@echo "Refresh completed!"
 
 # Full setup

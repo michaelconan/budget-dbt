@@ -3,13 +3,14 @@
 with personal as (
 
     select
-        "type",
+        -- Standardize transaction types to UPPER_CASE with underscores
+        upper(replace("type", ' ', '_')) as "type",
         product,
         started_date,
         completed_date,
         "description",
-        amount,
-        fee,
+        cast(replace(amount, ',', '') as double) as amount,
+        cast(replace(fee, ',', '') as double) as fee,
         currency,
         "state",
         balance
@@ -21,13 +22,14 @@ with personal as (
 spouse as (
 
     select
-        "type",
+        -- Standardize transaction types to UPPER_CASE with underscores
+        upper(replace("type", ' ', '_')) as "type",
         'Spouse' as product,
         started_date,
         completed_date,
         "description",
-        amount,
-        fee,
+        cast(replace(amount, ',', '') as double) as amount,
+        cast(replace(fee, ',', '') as double) as fee,
         currency,
         "state",
         balance
@@ -39,13 +41,14 @@ spouse as (
 joint as (
 
     select
-        "type",
+        -- Standardize transaction types to UPPER_CASE with underscores
+        upper(replace("type", ' ', '_')) as "type",
         'Joint' as product,
         started_date,
         completed_date,
         "description",
-        amount,
-        fee,
+        cast(replace(amount, ',', '') as double) as amount,
+        cast(replace(fee, ',', '') as double) as fee,
         currency,
         "state",
         balance
