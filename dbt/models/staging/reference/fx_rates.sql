@@ -1,11 +1,12 @@
 -- Generate full range of dates as Google Finance skips certain dates
 {% set current_date = modules.datetime.date.today().isoformat() %}
+{% set tomorrow = (modules.datetime.date.today() + modules.datetime.timedelta(days=1)).isoformat() %}
 
 with date_scaffold as (
     {{ dbt_utils.date_spine(
         datepart="day",
         start_date="cast('2023-01-01' as date)",
-        end_date="cast('" + current_date + "' as date)"
+        end_date="cast('" + tomorrow + "' as date)"
        )
     }}),
 
