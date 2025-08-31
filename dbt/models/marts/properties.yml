@@ -53,6 +53,8 @@ models:
       - name: category
         description: "The transaction category assigned by the source system or mapping"
         data_type: text
+        data_tests:
+          - not_null
       - name: amount
         description: "The amount of the transaction in original currency"
         data_type: real
