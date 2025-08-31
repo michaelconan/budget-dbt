@@ -1,166 +1,269 @@
-# Common Revolut statement columns and data tests
-revolut_columns: &revolut_columns
-  - name: type
-    description: "The kind of the transaction"
-    data_type: varchar
-    data_tests:
-      - not_null
-      - accepted_values:
-          values:
-            # Original UPPER_CASE format
-            - ATM
-            - CARD_PAYMENT
-            - CARD_REFUND
-            - CHARGE
-            - EXCHANGE
-            - FEE
-            - INTEREST
-            - REFUND
-            - REV_PAYMENT
-            - REWARD
-            - TAX
-            - TEMP_BLOCK
-            - TOPUP
-            - TRANSFER
-            # New Title Case format (newer Revolut exports)
-            - Card Payment
-            - Card Refund
-            - Charge
-            - Exchange
-            - Interest
-            - Rev Payment
-            - Topup
-            - Transfer
-  - name: product
-    description: "The type of account in which the transaction was made"
-    data_type: varchar
-    data_tests:
-      - not_null
-      - accepted_values:
-          values:
-            - Current
-            - Pocket
-            - Savings
-            - Deposit
-  - name: started_date
-    description: "The date and time when the transaction was initiated"
-    data_type: varchar
-    data_tests:
-      - not_null
-  - name: completed_date
-    description: "The date and time when the transaction was completed"
-    data_type: varchar
-    data_tests:
-      - not_null:
-          config:
-            where: "state = 'COMPLETED'"
-  - name: description
-    description: "The transaction description provided by Revolut"
-    data_type: varchar
-    data_tests:
-      - not_null
-  - name: amount
-    description: "The amount of the transaction"
-    data_type: varchar
-    data_tests:
-      - not_null
-  - name: fee
-    description: "Any fee charged for the transaction"
-    data_type: varchar
-  - name: currency
-    description: "The currency code of the transaction"
-    data_type: varchar
-    data_tests:
-      - not_null
-  - name: state
-    description: "Whether the transaction is posted or reverted"
-    data_type: varchar
-    data_tests:
-      - not_null
-      - accepted_values:
-          values:
-            - COMPLETED
-            - REVERTED
-            - PENDING
-  - name: balance
-    description: "The account balance after the transaction"
-    data_type: varchar
-
-test_null_or_empty: &not_null_or_empty
-  - not_null
-  - dbt_utils.not_empty_string
+version: 2
 
 sources:
-  - name: revolut
-    description: "Transaction data exported from Revolut"
-    database: etl
-    schema: main
-    tables:
-        - name: personal
-          identifier: raw_revolut__personal
-          description: "Personal account statement exported from Revolut"
-          columns: *revolut_columns
-        - name: spouse
-          identifier: raw_revolut__spouse
-          description: "Spouse account statement exported from Revolut"
-          columns: *revolut_columns
-        - name: joint
-          identifier: raw_revolut__joint
-          description: "Joint account statement exported from Revolut"
-          columns: *revolut_columns
   - name: bofa
-    description: "Transaction data exported from Bank of America"
-    database: etl
+    database: "{{ 'local' if target.name == 'local' else 'etl' }}"
     schema: main
     tables:
-      - name: activity
-        identifier: raw_bofa__activity
-        description: "My Financial Picture activity data exported from Bank of America"
-        data_tests:
-          - dbt_utils.expression_is_true:
-              expression: "try_strptime(date, '%m/%d/%Y') is not null"
+      - name: raw_bofa__activity
+        description: Raw transaction data from Bank of America.
         columns:
-          - name: date
-            description: "The date on which the transaction was completed"
-            data_type: varchar
-            data_tests:
-              - not_null
+          - name: Date
+            description: The date of the transaction.
+            tests:
               - dbt_utils.not_empty_string
-          - name: status
-            description: "The posting state of the transaction"
-            data_type: varchar
-            data_tests: *not_null_or_empty
-          - name: original_description
-            description: "The description provided by the transaction vendor"
-            data_type: varchar
-            data_tests: *not_null_or_empty
-          - name: amount
-            description: "The amount of the transaction"
-            data_type: varchar
-            data_tests: *not_null_or_empty
-          - name: currency
-            description: "The currency of the transaction"
-            data_type: varchar
-            data_tests: *not_null_or_empty
-          - name: account_name
-            description: "The account in which the transaction occurred"
-            data_type: varchar
-            data_tests: *not_null_or_empty
-          - name: category
-            description: "The transaction category assigned by Bank of America"
-            data_type: varchar
-          - name: split_type
-            description: "The type of split for categorized transactions"
-            data_type: varchar
-          - name: user_description
-            description: "User-defined description for the transaction"
-            data_type: varchar
-          - name: memo
-            description: "Additional memo or notes for the transaction"
-            data_type: varchar
-          - name: classification
-            description: "Transaction classification assigned by Bank of America"
-            data_type: varchar
-          - name: simple_description
-            description: "Simplified description of the transaction"
-            data_type: varchar
+              - dbt_utils.expression_is_true:
+                  expression: "try_strptime(date, '%m/%d/%Y') is not null"
+          - name: Amount
+            description: The amount of the transaction.
+            tests:
+              - dbt_utils.not_empty_string
+          - name: "Original Description"
+            description: The original description of the transaction.
+            tests:
+              - dbt_utils.not_empty_string
+          - name: "Simple Description"
+            description: A simplified description of the transaction.
+          - name: Category
+            description: The category of the transaction.
+          - name: "Account Name"
+            description: The name of the account.
+            tests:
+              - dbt_utils.not_empty_string
+          - name: Status
+            description: The status of the transaction.
+            tests:
+              - dbt_utils.not_empty_string
+          - name: Currency
+            description: The currency of the transaction.
+            tests:
+              - dbt_utils.not_empty_string
+          - name: "User Description"
+            description: A user-provided description of the transaction.
+          - name: Memo
+            description: A user-provided memo for the transaction.
+          - name: Classification
+            description: The classification of the transaction.
+          - name: "Split Type"
+            description: The type of split for the transaction.
+
+  - name: revolut
+    database: "{{ 'local' if target.name == 'local' else 'etl' }}"
+    schema: main
+    tables:
+      - name: raw_revolut__personal
+        description: Raw transaction data from Revolut (Personal).
+        columns:
+          - name: Type
+            description: The type of the transaction.
+            tests:
+              - source_accepted_values:
+                  values:
+                    [
+                      "ATM",
+                      "CARD_PAYMENT",
+                      "CARD_REFUND",
+                      "CHARGE",
+                      "EXCHANGE",
+                      "FEE",
+                      "INTEREST",
+                      "REFUND",
+                      "REV_PAYMENT",
+                      "REWARD",
+                      "TAX",
+                      "TEMP_BLOCK",
+                      "TOPUP",
+                      "TRANSFER",
+                      "Card Payment",
+                      "Card Refund",
+                      "Charge",
+                      "Exchange",
+                      "Interest",
+                      "Rev Payment",
+                      "Topup",
+                      "Transfer",
+                    ]
+          - name: Product
+            description: The product associated with the transaction.
+            tests:
+              - source_accepted_values:
+                  values: ["Current", "Pocket", "Savings", "Deposit"]
+          - name: Started Date
+            description: The date the transaction was started.
+            tests:
+              - not_null
+          - name: Completed Date
+            description: The date the transaction was completed.
+            tests:
+              - not_null:
+                  config:
+                    where: "state = 'COMPLETED'"
+          - name: Description
+            description: The description of the transaction.
+            tests:
+              - not_null
+          - name: Amount
+            description: The amount of the transaction.
+            tests:
+              - not_null
+          - name: Fee
+            description: The fee associated with the transaction.
+            tests:
+              - not_null
+          - name: Currency
+            description: The currency of the transaction.
+            tests:
+              - not_null
+          - name: State
+            description: The state of the transaction.
+            tests:
+              - source_accepted_values:
+                  values: ["COMPLETED", "REVERTED", "PENDING"]
+          - name: Balance
+            description: The balance after the transaction.
+            tests:
+              - not_null
+      - name: raw_revolut__joint
+        description: Raw transaction data from Revolut (Joint).
+        columns:
+          - name: Type
+            description: The type of the transaction.
+            tests:
+              - source_accepted_values:
+                  values:
+                    [
+                      "ATM",
+                      "CARD_PAYMENT",
+                      "CARD_REFUND",
+                      "CHARGE",
+                      "EXCHANGE",
+                      "FEE",
+                      "INTEREST",
+                      "REFUND",
+                      "REV_PAYMENT",
+                      "REWARD",
+                      "TAX",
+                      "TEMP_BLOCK",
+                      "TOPUP",
+                      "TRANSFER",
+                      "Card Payment",
+                      "Card Refund",
+                      "Charge",
+                      "Exchange",
+                      "Interest",
+                      "Rev Payment",
+                      "Topup",
+                      "Transfer",
+                    ]
+          - name: Product
+            description: The product associated with the transaction.
+            tests:
+              - source_accepted_values:
+                  values: ["Current", "Pocket", "Savings", "Deposit"]
+          - name: Started Date
+            description: The date the transaction was started.
+            tests:
+              - not_null
+          - name: Completed Date
+            description: The date the transaction was completed.
+            tests:
+              - not_null:
+                  config:
+                    where: "state = 'COMPLETED'"
+          - name: Description
+            description: The description of the transaction.
+            tests:
+              - not_null
+          - name: Amount
+            description: The amount of the transaction.
+            tests:
+              - not_null
+          - name: Fee
+            description: The fee associated with the transaction.
+            tests:
+              - not_null
+          - name: Currency
+            description: The currency of the transaction.
+            tests:
+              - not_null
+          - name: State
+            description: The state of the transaction.
+            tests:
+              - source_accepted_values:
+                  values: ["COMPLETED", "REVERTED", "PENDING"]
+          - name: Balance
+            description: The balance after the transaction.
+            tests:
+              - not_null
+      - name: raw_revolut__spouse
+        description: Raw transaction data from Revolut (Spouse).
+        columns:
+          - name: Type
+            description: The type of the transaction.
+            tests:
+              - source_accepted_values:
+                  values:
+                    [
+                      "ATM",
+                      "CARD_PAYMENT",
+                      "CARD_REFUND",
+                      "CHARGE",
+                      "EXCHANGE",
+                      "FEE",
+                      "INTEREST",
+                      "REFUND",
+                      "REV_PAYMENT",
+                      "REWARD",
+                      "TAX",
+                      "TEMP_BLOCK",
+                      "TOPUP",
+                      "TRANSFER",
+                      "Card Payment",
+                      "Card Refund",
+                      "Charge",
+                      "Exchange",
+                      "Interest",
+                      "Rev Payment",
+                      "Topup",
+                      "Transfer",
+                    ]
+          - name: Product
+            description: The product associated with the transaction.
+            tests:
+              - source_accepted_values:
+                  values: ["Current", "Pocket", "Savings", "Deposit"]
+          - name: Started Date
+            description: The date the transaction was started.
+            tests:
+              - not_null
+          - name: Completed Date
+            description: The date the transaction was completed.
+            tests:
+              - not_null:
+                  config:
+                    where: "state = 'COMPLETED'"
+          - name: Description
+            description: The description of the transaction.
+            tests:
+              - not_null
+          - name: Amount
+            description: The amount of the transaction.
+            tests:
+              - not_null
+          - name: Fee
+            description: The fee associated with the transaction.
+            tests:
+              - not_null
+          - name: Currency
+            description: The currency of the transaction.
+            tests:
+              - not_null
+          - name: State
+            description: The state of the transaction.
+            tests:
+              - source_accepted_values:
+                  values: ["COMPLETED", "REVERTED", "PENDING"]
+          - name: Balance
+            description: The balance after the transaction.
+            tests:
+              - not_null

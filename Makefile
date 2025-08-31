@@ -72,6 +72,16 @@ dbt-test:
 	@echo "Running dbt tests..."
 	$(PIPENV) dbt test
 
+.PHONY: test-local
+test-local: ## Run local tests
+	export DBT_PROJECT_DIR=dbt; \
+	export DBT_PROFILES_DIR=dbt; \
+	$(PIPENV) dbt deps; \
+	$(PIPENV) dbt seed --target local; \
+	$(PIPENV) dbt run --target local; \
+	$(PIPENV) dbt test --target local; \
+	$(PIPENV) dbt docs generate --target local
+
 .PHONY: dbt-build
 dbt-build: ## Run dbt build (seed, run, test)
 	$(PIPENV) dbt build
