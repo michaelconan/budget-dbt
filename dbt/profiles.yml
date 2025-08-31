@@ -3,13 +3,20 @@ budget_dbt:
 
     dev:
       type: duckdb
-      threads: 4
-      database: etl
-      schema: 'main'
-      path: 'C:\Users\micha\Documents\budget-dbt\db\etl.duckdb'
-      # DuckDB specific settings
-      settings:
-        memory_limit: '2GB'
-        temp_directory: 'db/temp'
+      path: 'db/etl.duckdb'
+      database: 'etl'
+      threads: 24
+      extensions:
+        - "httpfs"
+        - "json"
+        - "icu"
+    local:
+      type: duckdb
+      path: 'db/local.duckdb'
+      database: 'local'
+      threads: 24
+      extensions:
+        - "httpfs"
+        - "json"
+        - "icu"
 
-  target: dev

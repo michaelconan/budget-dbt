@@ -44,6 +44,8 @@ models:
       - name: fee
         description: "Any fee charged for the transaction"
         data_type: real
+        data_tests:
+          - not_null
       - name: currency
         description: "The currency code of the transaction"
         data_type: text
@@ -67,3 +69,5 @@ models:
       - name: category
         description: "The assigned category for the transaction based on description matching"
         data_type: text
+        data_tests:
+          - not_null

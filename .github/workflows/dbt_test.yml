@@ -1,0 +1,58 @@
+name: DBT Test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  dbt_test:
+    runs-on: ubuntu-latest
+    env:
+      DBT_PROJECT_DIR: dbt
+      DBT_PROFILES_DIR: dbt
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install pipenv
+          pipenv install
+
+      - name: Run local tests
+        run: make test-local
+
+      - name: Compute coverage
+        id: coverage
+        run: |
+          doc_coverage=$(pipenv run dbt-coverage compute doc --format markdown)
+          test_coverage=$(pipenv run dbt-coverage compute test --format markdown)
+          echo "doc_coverage<<EOF" >> $GITHUB_OUTPUT
+          echo "$doc_coverage" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "test_coverage<<EOF" >> $GITHUB_OUTPUT
+          echo "$test_coverage" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Post coverage comment
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## DBT Coverage Report
+
+            ### Documentation Coverage
+            ```
+            ${{ steps.coverage.outputs.doc_coverage }}
+            ```
+
+            ### Test Coverage
+            ```
+            ${{ steps.coverage.outputs.test_coverage }}
+            ```

@@ -1,10 +1,11 @@
 # Transaction data files
 data/**/*.csv
 # Seed data files
-dbt/seeds/**/*.csv
 # SQLite database files
 db/*.db
 db/*.duckdb
+data/local.duckdb
+coverage.json
 # Python venv
 .venv
 # Log files

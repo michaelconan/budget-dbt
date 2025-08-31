@@ -9,13 +9,13 @@ with personal as (
         started_date,
         completed_date,
         "description",
-        cast(replace(amount, ',', '') as double) as amount,
-        cast(replace(fee, ',', '') as double) as fee,
+        cast(replace(cast(amount as varchar), ',', '') as double) as amount,
+        cast(replace(cast(fee as varchar), ',', '') as double) as fee,
         currency,
         "state",
-        balance
+        cast(replace(cast(balance as varchar), ',', '') as double) as balance
     from
-        {{ source('revolut', 'personal') }}
+        {{ source('revolut', 'raw_revolut__personal') }}
 
 ),
 
@@ -28,13 +28,13 @@ spouse as (
         started_date,
         completed_date,
         "description",
-        cast(replace(amount, ',', '') as double) as amount,
-        cast(replace(fee, ',', '') as double) as fee,
+        cast(replace(cast(amount as varchar), ',', '') as double) as amount,
+        cast(replace(cast(fee as varchar), ',', '') as double) as fee,
         currency,
         "state",
-        balance
+        cast(replace(cast(balance as varchar), ',', '') as double) as balance
     from
-        {{ source('revolut', 'spouse') }}
+        {{ source('revolut', 'raw_revolut__spouse') }}
 
 ),
 
@@ -47,13 +47,13 @@ joint as (
         started_date,
         completed_date,
         "description",
-        cast(replace(amount, ',', '') as double) as amount,
-        cast(replace(fee, ',', '') as double) as fee,
+        cast(replace(cast(amount as varchar), ',', '') as double) as amount,
+        cast(replace(cast(fee as varchar), ',', '') as double) as fee,
         currency,
         "state",
-        balance
+        cast(replace(cast(balance as varchar), ',', '') as double) as balance
     from
-        {{ source('revolut', 'joint') }}
+        {{ source('revolut', 'raw_revolut__joint') }}
 
 ),
 
@@ -110,8 +110,8 @@ flagged as (
         cast(k.transaction_key as text) as transaction_key,
         k.type,
         cast(k.product as text) as product,
-        cast(substr(k.started_date, 1, 10) as text) as started_date,
-        cast(substr(k.completed_date, 1, 10) as text) as completed_date,
+        cast(substr(cast(k.started_date as varchar), 1, 10) as text) as started_date,
+        cast(substr(cast(k.completed_date as varchar), 1, 10) as text) as completed_date,
         k.description,
         k.amount,
         k.fee,
