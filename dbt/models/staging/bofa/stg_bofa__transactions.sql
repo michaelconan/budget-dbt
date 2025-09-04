@@ -31,7 +31,11 @@ with transactions as (
         nullif(trim(classification), '') as classification,
         nullif(trim(simple_description), '') as simple_description
     from
-        {{ source('bofa', 'raw_bofa__activity') }}
+        {% if target.name == 'local' %}
+            {{ ref('raw_bofa__activity') }}
+        {% else %}
+            {{ source('bofa', 'raw_bofa__activity') }}
+        {% endif %}
 
 ),
 

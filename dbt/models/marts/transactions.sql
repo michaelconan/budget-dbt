@@ -78,7 +78,12 @@ translated as (
             c.currency = 'EUR'
             and c.date = gf.date
     left join
-        {{ ref('category_mapping') }} as cm
+        {% if target.name == 'local' %}
+            {{ ref('category_mapping__local') }}
+        {% else %}
+            {{ ref('category_mapping') }}
+        {% endif %}
+        as cm
         on c.category = case
             when c.source = 'revolut'
                 then cm.revolut
