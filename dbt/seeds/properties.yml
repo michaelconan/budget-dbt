@@ -5,6 +5,7 @@ seeds:
   - name: google_finance__eur_usd
     description: "Historical EUR to USD exchange rates from Google Finance"
     config:
+      enabled: "{{ target.name != 'local' }}"
       quote_columns: false
       column_types:
         Date: varchar
@@ -22,9 +23,10 @@ seeds:
         data_type: double
         data_tests:
           - not_null
-  - name: vendor_categories
+  - name: vendor_category_mapping
     description: "Mapping of transaction vendors to their assigned categories"
     config:
+      enabled: "{{ target.name != 'local' }}"
       quote_columns: false
       column_types:
         category: varchar
@@ -44,6 +46,7 @@ seeds:
   - name: category_mapping
     description: "Mapping between source system categories and standardized category types"
     config:
+      enabled: "{{ target.name != 'local' }}"
       quote_columns: false
       column_types:
         type: varchar

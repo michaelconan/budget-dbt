@@ -1,4 +1,4 @@
-name: DBT Test
+name: Test dbt models
 
 on:
   pull_request:
@@ -31,8 +31,8 @@ jobs:
       - name: Compute coverage
         id: coverage
         run: |
-          doc_coverage=$(pipenv run dbt-coverage compute doc --format markdown)
-          test_coverage=$(pipenv run dbt-coverage compute test --format markdown)
+          doc_coverage=$(make doc-coverage)
+          test_coverage=$(make test-coverage)
           echo "doc_coverage<<EOF" >> $GITHUB_OUTPUT
           echo "$doc_coverage" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT

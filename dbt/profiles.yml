@@ -1,6 +1,6 @@
 budget_dbt:
+  target: dev
   outputs:
-
     dev:
       type: duckdb
       path: 'db/etl.duckdb'

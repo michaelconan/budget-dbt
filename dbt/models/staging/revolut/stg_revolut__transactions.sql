@@ -1,6 +1,6 @@
--- 1. Load personal and joint transactions from Revolut
+-- 1. Load personal, spouse, joint transactions from Revolut
 
-with personal as (
+with combined as (
 
     select
         -- Standardize transaction types to UPPER_CASE with underscores
@@ -15,64 +15,11 @@ with personal as (
         "state",
         cast(replace(cast(balance as varchar), ',', '') as double) as balance
     from
-        {{ source('revolut', 'raw_revolut__personal') }}
+        {{ ref('stg_revolut__combined') }}
 
 ),
 
-spouse as (
-
-    select
-        -- Standardize transaction types to UPPER_CASE with underscores
-        upper(replace("type", ' ', '_')) as "type",
-        'Spouse' as product,
-        started_date,
-        completed_date,
-        "description",
-        cast(replace(cast(amount as varchar), ',', '') as double) as amount,
-        cast(replace(cast(fee as varchar), ',', '') as double) as fee,
-        currency,
-        "state",
-        cast(replace(cast(balance as varchar), ',', '') as double) as balance
-    from
-        {{ source('revolut', 'raw_revolut__spouse') }}
-
-),
-
-joint as (
-
-    select
-        -- Standardize transaction types to UPPER_CASE with underscores
-        upper(replace("type", ' ', '_')) as "type",
-        'Joint' as product,
-        started_date,
-        completed_date,
-        "description",
-        cast(replace(cast(amount as varchar), ',', '') as double) as amount,
-        cast(replace(cast(fee as varchar), ',', '') as double) as fee,
-        currency,
-        "state",
-        cast(replace(cast(balance as varchar), ',', '') as double) as balance
-    from
-        {{ source('revolut', 'raw_revolut__joint') }}
-
-),
-
--- 2. Combine personal and joint transactions into a single table
-
-combined as (
-
-    select *
-    from personal
-    union all
-    select *
-    from spouse
-    union all
-    select *
-    from joint
-
-),
-
--- 3. Create a surrogate key for each transaction
+-- 2. Create a surrogate key for each transaction
 
 keyed as (
 
@@ -91,7 +38,7 @@ keyed as (
 
 ),
 
--- 4. Identify transfers between accounts
+-- 3. Identify transfers between accounts
 
 transfers as (
 
@@ -103,7 +50,7 @@ transfers as (
 
 ),
 
--- 5. Select all transactions and indicate if they are transfers
+-- 4. Select all transactions and indicate if they are transfers
 flagged as (
 
     select

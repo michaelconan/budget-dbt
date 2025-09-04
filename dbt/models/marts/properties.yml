@@ -22,9 +22,10 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              values:
-                - revolut
-                - bofa
+              arguments:
+                values:
+                  - revolut
+                  - bofa
       - name: bank
         description: "The name of the bank or financial institution"
         data_type: text

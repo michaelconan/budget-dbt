@@ -2,7 +2,8 @@ with existing_vendors as (
     select distinct
         category,
         vendor
-    from {{ ref('vendor_categories') }}
+    from
+        {{ ref('vendor_categories') }}
 ),
 
 new_uncategorized as (
