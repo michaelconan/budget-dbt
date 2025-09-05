@@ -59,18 +59,28 @@ models:
       - name: split_type
         description: "The type of split for categorized transactions"
         data_type: text
+        data_tests:
+          - not_null
       - name: user_description
         description: "User-defined description for the transaction"
         data_type: text
+        data_tests:
+          - not_null
       - name: memo
         description: "Additional memo or notes for the transaction"
         data_type: text
+        data_tests:
+          - not_null
       - name: classification
         description: "Transaction classification assigned by Bank of America"
         data_type: text
+        data_tests:
+          - not_null
       - name: simple_description
         description: "Simplified description of the transaction"
         data_type: text
+        data_tests:
+          - not_null
       - name: is_transfer
         description: "Boolean flag indicating if this transaction is a transfer between accounts"
         data_type: boolean

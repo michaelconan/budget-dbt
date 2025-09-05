@@ -1,0 +1,3 @@
+date,status,original_description,amount,currency,account_name,category,split_type,user_description,memo,classification,simple_description
+"01/01/2023","Posted","Test Transaction 1","10.00","USD","Test Account","Test Category","Test Split","Test User Description","Test Memo","Test Classification","Test Simple Description"
+"01/02/2023","Posted","Test Transaction 2","-20.50","USD","Test Account","Test Category","Test Split","Test User Description","Test Memo","Test Classification","Test Simple Description"

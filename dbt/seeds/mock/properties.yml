@@ -1,0 +1,227 @@
+
+version: 2
+
+revolut_config: &revolut_config
+  enabled: "{{ target.name == 'local' }}"
+  quote_columns: false
+  column_types:
+    type: varchar
+    product: varchar
+    started_date: varchar
+    completed_date: varchar
+    description: varchar
+    amount: varchar
+    fee: varchar
+    currency: varchar
+    state: varchar
+    balance: varchar
+  delimiter: ","
+
+revolut_columns: &revolut_columns
+  - name: type
+    description: "The kind of the transaction (e.g., CARD_PAYMENT, TRANSFER)"
+    data_type: varchar
+    data_tests:
+      - not_null
+  - name: product
+    description: "The type of account in which the transaction was made"
+    data_type: varchar
+    data_tests:
+      - not_null
+  - name: started_date
+    description: "The date and time when the transaction was initiated"
+    data_type: varchar
+    data_tests:
+      - not_null
+  - name: completed_date
+    description: "The date and time when the transaction was completed"
+    data_type: varchar
+    data_tests:
+      - not_null
+  - name: description
+    description: "The transaction description provided by Revolut"
+    data_type: varchar
+    data_tests:
+      - not_null
+  - name: amount
+    description: "The amount of the transaction (string format)"
+    data_type: varchar
+    data_tests:
+      - not_null
+  - name: fee
+    description: "Any fee charged for the transaction (string format)"
+    data_type: varchar
+  - name: currency
+    description: "The currency code of the transaction (e.g., EUR, USD)"
+    data_type: varchar
+    data_tests:
+      - not_null
+  - name: state
+    description: "Whether the transaction is posted or reverted (COMPLETED, REVERTED, PENDING)"
+    data_type: varchar
+    data_tests:
+      - not_null
+  - name: balance
+    description: "The account balance after the transaction (string format)"
+    data_type: varchar
+
+seeds:
+  # ============================================================================
+  # MOCK SOURCES VIA SEEDS - Only run when target is 'local'
+  # ============================================================================
+  
+  # Raw data seeds for testing
+  - name: raw_bofa__activity
+    description: "Mock Bank of America transaction data for local testing"
+    config:
+      enabled: "{{ target.name == 'local' }}"
+      quote_columns: false
+      column_types:
+        date: varchar
+        status: varchar
+        original_description: varchar
+        amount: varchar
+        currency: varchar
+        account_name: varchar
+        category: varchar
+        split_type: varchar
+        user_description: varchar
+        memo: varchar
+        classification: varchar
+        simple_description: varchar
+      delimiter: ","
+    columns:
+      - name: date
+        description: "The date on which the transaction was completed (MM/DD/YYYY format)"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: status
+        description: "The posting state of the transaction (e.g., Posted, Pending)"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: original_description
+        description: "The description provided by the transaction vendor"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: amount
+        description: "The amount of the transaction (string format with potential commas)"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: currency
+        description: "The currency of the transaction (e.g., USD)"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: account_name
+        description: "The account in which the transaction occurred"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: category
+        description: "The transaction category assigned by Bank of America"
+        data_type: varchar
+      - name: split_type
+        description: "The type of split for categorized transactions"
+        data_type: varchar
+      - name: user_description
+        description: "User-defined description for the transaction"
+        data_type: varchar
+      - name: memo
+        description: "Additional memo or notes for the transaction"
+        data_type: varchar
+      - name: classification
+        description: "Transaction classification assigned by Bank of America"
+        data_type: varchar
+      - name: simple_description
+        description: "Simplified description of the transaction"
+        data_type: varchar
+
+  - name: raw_revolut__personal
+    description: "Mock Revolut personal account transaction data for local testing"
+    config: *revolut_config
+    columns: *revolut_columns
+
+  - name: raw_revolut__spouse
+    description: "Mock Revolut spouse account transaction data for local testing"
+    config: *revolut_config
+    columns: *revolut_columns
+
+  - name: raw_revolut__joint
+    description: "Mock Revolut joint account transaction data for local testing"
+    config: *revolut_config
+    columns: *revolut_columns
+
+  # ============================================================================
+  # MOCK REFERENCE DATA SEEDS - Available in all environments
+  # ============================================================================
+  
+  - name: google_finance__eur_usd__local
+    description: "Historical EUR to USD exchange rates from Google Finance"
+    config:
+      enabled: "{{ target.name == 'local' }}"
+      quote_columns: false
+      column_types:
+        Date: varchar
+        Close: double
+      delimiter: ","
+    columns:
+      - name: Date
+        description: "The date of the exchange rate in YYYY-MM-DD format"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: Close
+        description: "The closing EUR to USD exchange rate for the date"
+        data_type: double
+        data_tests:
+          - not_null
+  
+  - name: vendor_categories__local
+    description: "Mapping of transaction vendors to their assigned categories"
+    config:
+      enabled: "{{ target.name == 'local' }}"
+      quote_columns: false
+      column_types:
+        category: varchar
+        vendor: varchar
+      delimiter: ","
+    columns:
+      - name: category
+        description: "The category to assign to transactions from this vendor"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: vendor
+        description: "The vendor name or description pattern to match"
+        data_type: varchar
+        data_tests:
+          - not_null
+  
+  - name: category_mapping__local
+    description: "Mapping between source system categories and standardized category types"
+    config:
+      enabled: "{{ target.name == 'local' }}"
+      quote_columns: false
+      column_types:
+        type: varchar
+        bofa: varchar
+        revolut: varchar
+      delimiter: ","
+    columns:
+      - name: type
+        description: "The standardized category type"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: bofa
+        description: "The category name from Bank of America"
+        data_type: varchar
+      - name: revolut
+        description: "The category name from Revolut"
+        data_type: varchar
+
+

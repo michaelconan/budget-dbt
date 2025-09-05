@@ -5,7 +5,7 @@ with transactions as (
     select
         status,
         currency,
-        cast(replace(amount, ',', '') as double) as amount,
+        cast(replace(cast(amount as varchar), ',', '') as double) as amount,
         lower(category) as category,
         substr(account_name, 1, instr(account_name, '-') - 2) as bank_name,
         substr(
@@ -31,7 +31,11 @@ with transactions as (
         nullif(trim(classification), '') as classification,
         nullif(trim(simple_description), '') as simple_description
     from
-        {{ source('bofa', 'activity') }}
+        {% if target.name == 'local' %}
+            {{ ref('raw_bofa__activity') }}
+        {% else %}
+            {{ source('bofa', 'raw_bofa__activity') }}
+        {% endif %}
 
 ),
 

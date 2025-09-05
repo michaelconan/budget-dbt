@@ -1,0 +1,3 @@
+type,product,started_date,completed_date,description,amount,fee,currency,state,balance
+"CARD_PAYMENT","Current","2023-01-01 14:00:00","2023-01-01 14:00:00","Test Payment 3","30.00","0.00","EUR","COMPLETED","300.00"
+"TRANSFER","Current","2023-01-02 15:00:00","2023-01-02 15:00:00","Test Transfer 3","40.00","0.00","EUR","COMPLETED","340.00"

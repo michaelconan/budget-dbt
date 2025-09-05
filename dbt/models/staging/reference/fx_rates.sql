@@ -15,7 +15,13 @@ rate_data as (
         ds.date_day as date,
         gf.close as rate
     from date_scaffold as ds
-    left join {{ ref('google_finance__eur_usd') }} as gf
+    left join
+        {% if target.name == 'local' %}
+            {{ ref('google_finance__eur_usd__local') }}
+        {% else %}
+            {{ ref('google_finance__eur_usd') }}
+        {% endif %}
+        as gf
         on ds.date_day = gf.date
 ),
 

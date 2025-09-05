@@ -24,6 +24,9 @@ models:
 
 vars:
 
+  is_local: "{{ target.name == 'local' }}"
+  raw_db: "{{ 'local' if target.name == 'local' else 'etl' }}"
+
   # Keywords by category to use for Revolut categorisation
   categories:
 

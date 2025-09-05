@@ -16,6 +16,21 @@ models:
         data_tests:
           - not_null
           - dbt_utils.accepted_range:
-              min_value: 0.5
-              max_value: 2.0
-              where: "date >= '2023-01-01'"
+              arguments:
+                min_value: 0.5
+                max_value: 2.0
+                where: "date >= '2023-01-01'"
+  
+  - name: vendor_categories
+    description: "Vendor category mappings for transaction categorization (conditionally references local seed or production table)"
+    columns:
+      - name: vendor
+        description: "Vendor name or pattern to match against transaction descriptions"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: category
+        description: "The category to assign to transactions from this vendor"
+        data_type: text
+        data_tests:
+          - not_null
