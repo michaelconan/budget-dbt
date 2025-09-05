@@ -72,6 +72,14 @@ dbt-test:
 	@echo "Running dbt tests..."
 	$(PIPENV) dbt test
 
+.PHONY: test-local
+test-local: ## Run local tests
+	$(PIPENV) dbt deps; \
+	$(PIPENV) dbt seed --target local; \
+	$(PIPENV) dbt run --target local; \
+	$(PIPENV) dbt test --target local; \
+	$(PIPENV) dbt docs generate --target local
+
 .PHONY: dbt-build
 dbt-build: ## Run dbt build (seed, run, test)
 	$(PIPENV) dbt build
@@ -94,6 +102,14 @@ categorise:
 	gemini -p $(TMP_PROMPT)
 	@rm $(TMP_PROMPT)
 	@echo "Categorised TBD vendors"
+
+.PHONY: doc-coverage
+doc-coverage:
+	pipenv run dbt-coverage compute doc --run-artifacts-dir dbt/target --cov-format markdown
+
+.PHONY: test-coverage
+test-coverage:
+	pipenv run dbt-coverage compute test --run-artifacts-dir dbt/target --cov-format markdown
 
 ## Documentation (from docs.sh)
 .PHONY: docs

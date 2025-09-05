@@ -1,3 +1,6 @@
+
+version: 2
+
 # Common Revolut statement columns and data tests
 revolut_columns: &revolut_columns
   - name: type
@@ -6,42 +9,44 @@ revolut_columns: &revolut_columns
     data_tests:
       - not_null
       - accepted_values:
-          values:
-            # Original UPPER_CASE format
-            - ATM
-            - CARD_PAYMENT
-            - CARD_REFUND
-            - CHARGE
-            - EXCHANGE
-            - FEE
-            - INTEREST
-            - REFUND
-            - REV_PAYMENT
-            - REWARD
-            - TAX
-            - TEMP_BLOCK
-            - TOPUP
-            - TRANSFER
-            # New Title Case format (newer Revolut exports)
-            - Card Payment
-            - Card Refund
-            - Charge
-            - Exchange
-            - Interest
-            - Rev Payment
-            - Topup
-            - Transfer
+          arguments:
+            values:
+              # Original UPPER_CASE format
+              - ATM
+              - CARD_PAYMENT
+              - CARD_REFUND
+              - CHARGE
+              - EXCHANGE
+              - FEE
+              - INTEREST
+              - REFUND
+              - REV_PAYMENT
+              - REWARD
+              - TAX
+              - TEMP_BLOCK
+              - TOPUP
+              - TRANSFER
+              # New Title Case format (newer Revolut exports)
+              - Card Payment
+              - Card Refund
+              - Charge
+              - Exchange
+              - Interest
+              - Rev Payment
+              - Topup
+              - Transfer
   - name: product
     description: "The type of account in which the transaction was made"
     data_type: varchar
     data_tests:
       - not_null
       - accepted_values:
-          values:
-            - Current
-            - Pocket
-            - Savings
-            - Deposit
+          arguments:
+            values:
+              - Current
+              - Pocket
+              - Savings
+              - Deposit
   - name: started_date
     description: "The date and time when the transaction was initiated"
     data_type: varchar
@@ -78,10 +83,11 @@ revolut_columns: &revolut_columns
     data_tests:
       - not_null
       - accepted_values:
-          values:
-            - COMPLETED
-            - REVERTED
-            - PENDING
+          arguments:
+            values:
+              - COMPLETED
+              - REVERTED
+              - PENDING
   - name: balance
     description: "The account balance after the transaction"
     data_type: varchar
@@ -93,24 +99,24 @@ test_null_or_empty: &not_null_or_empty
 sources:
   - name: revolut
     description: "Transaction data exported from Revolut"
-    database: etl
+    database: "{{ 'local' if target.name == 'local' else 'etl' }}"
     schema: main
     tables:
-        - name: personal
-          identifier: raw_revolut__personal
-          description: "Personal account statement exported from Revolut"
-          columns: *revolut_columns
-        - name: spouse
-          identifier: raw_revolut__spouse
-          description: "Spouse account statement exported from Revolut"
-          columns: *revolut_columns
-        - name: joint
-          identifier: raw_revolut__joint
-          description: "Joint account statement exported from Revolut"
-          columns: *revolut_columns
+      - name: personal
+        identifier: raw_revolut__personal
+        description: "Personal account statement exported from Revolut"
+        columns: *revolut_columns
+      - name: spouse
+        identifier: raw_revolut__spouse
+        description: "Spouse account statement exported from Revolut"
+        columns: *revolut_columns
+      - name: joint
+        identifier: raw_revolut__joint
+        description: "Joint account statement exported from Revolut"
+        columns: *revolut_columns
   - name: bofa
     description: "Transaction data exported from Bank of America"
-    database: etl
+    database: "{{ 'local' if target.name == 'local' else 'etl' }}"
     schema: main
     tables:
       - name: activity

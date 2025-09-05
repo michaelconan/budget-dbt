@@ -2,6 +2,59 @@
 version: 2
 
 models:
+  - name: stg_revolut__combined
+    description: "Combined raw Revolut transactions from personal, spouse, and joint accounts with standardized product names"
+    columns:
+      - name: type
+        description: "The kind of the transaction"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: product
+        description: "The type of account (Current, Pocket, Savings, Joint, Spouse)"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: started_date
+        description: "The date when the transaction was initiated"
+        data_type: timestamp
+        data_tests:
+          - not_null
+      - name: completed_date
+        description: "The date when the transaction was completed"
+        data_type: timestamp
+        data_tests:
+          - not_null
+      - name: description
+        description: "The transaction description provided by Revolut"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: amount
+        description: "The amount of the transaction"
+        data_type: real
+        data_tests:
+          - not_null
+      - name: fee
+        description: "Any fee charged for the transaction"
+        data_type: real
+        data_tests:
+          - not_null
+      - name: currency
+        description: "The currency code of the transaction"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: state
+        description: "Whether the transaction is posted, pending, or reverted"
+        data_type: text
+        data_tests:
+          - not_null
+      - name: balance
+        description: "The account balance after the transaction"
+        data_type: real
+        data_tests:
+          - not_null
   - name: stg_revolut__transactions
     description: "Transactions from Revolut personal and joint accounts and pockets"
     columns:
@@ -44,6 +97,8 @@ models:
       - name: fee
         description: "Any fee charged for the transaction"
         data_type: real
+        data_tests:
+          - not_null
       - name: currency
         description: "The currency code of the transaction"
         data_type: text
@@ -67,3 +122,5 @@ models:
       - name: category
         description: "The assigned category for the transaction based on description matching"
         data_type: text
+        data_tests:
+          - not_null
