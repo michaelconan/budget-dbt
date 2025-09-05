@@ -35,8 +35,8 @@ jobs:
       - name: Compute coverage
         id: coverage
         run: |
-          doc_coverage=$(make doc-coverage)
-          test_coverage=$(make test-coverage)
+          doc_coverage=$(make -s doc-coverage)
+          test_coverage=$(make -s test-coverage)
           echo "doc_coverage<<EOF" >> $GITHUB_OUTPUT
           echo "$doc_coverage" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -52,11 +52,8 @@ jobs:
             ## DBT Coverage Report
 
             ### Documentation Coverage
-            ```
+            
             ${{ steps.coverage.outputs.doc_coverage }}
-            ```
 
             ### Test Coverage
-            ```
             ${{ steps.coverage.outputs.test_coverage }}
-            ```
