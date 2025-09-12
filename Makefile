@@ -143,6 +143,10 @@ full-setup: init load dbt-deps dbt-run
 dev: dbt-run dbt-test
 	@echo "Development workflow completed!"
 
+.PHONY: streamlit-run
+streamlit-run: ## Run the streamlit app
+	$(PIPENV) streamlit run apps/budget_dashboard.py
+
 ## Utilities
 .PHONY: db-shell
 db-shell: ## Open SQLite shell for the database
