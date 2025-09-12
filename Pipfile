@@ -7,6 +7,8 @@ name = "pypi"
 dbt-core = "*"
 dbt-duckdb = "*"
 dbt-coverage = "*"
+streamlit = "*"
+pandas = "*"
 
 [dev-packages]
 sqlfluff = "*"
