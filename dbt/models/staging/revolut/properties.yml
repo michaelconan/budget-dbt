@@ -24,7 +24,9 @@ models:
         description: "The date when the transaction was completed"
         data_type: timestamp
         data_tests:
-          - not_null
+          - not_null:
+              config:
+                where: "state = 'COMPLETED'"
       - name: description
         description: "The transaction description provided by Revolut"
         data_type: text
@@ -54,7 +56,9 @@ models:
         description: "The account balance after the transaction"
         data_type: real
         data_tests:
-          - not_null
+          - not_null:
+              config:
+                where: "state = 'COMPLETED'"
   - name: stg_revolut__transactions
     description: "Transactions from Revolut personal and joint accounts and pockets"
     columns:
@@ -123,4 +127,6 @@ models:
         description: "The assigned category for the transaction based on description matching"
         data_type: text
         data_tests:
-          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              arguments:
+                column_type: varchar

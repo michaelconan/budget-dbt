@@ -83,7 +83,7 @@ translated as (
         {% else %}
             {{ ref('category_mapping') }}
         {% endif %}
-        as cm
+            as cm
         on c.category = case
             when c.source = 'revolut'
                 then cm.revolut

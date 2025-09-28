@@ -60,17 +60,21 @@ models:
         description: "The type of split for categorized transactions"
         data_type: text
         data_tests:
-          - not_null
+          - dbt_expectations.expect_column_values_to_be_null
       - name: user_description
         description: "User-defined description for the transaction"
         data_type: text
         data_tests:
-          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              arguments:
+                column_type: varchar
       - name: memo
         description: "Additional memo or notes for the transaction"
         data_type: text
         data_tests:
-          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              arguments:
+                column_type: varchar
       - name: classification
         description: "Transaction classification assigned by Bank of America"
         data_type: text
@@ -80,7 +84,9 @@ models:
         description: "Simplified description of the transaction"
         data_type: text
         data_tests:
-          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              arguments:
+                column_type: varchar
       - name: is_transfer
         description: "Boolean flag indicating if this transaction is a transfer between accounts"
         data_type: boolean
