@@ -180,7 +180,7 @@ seeds:
         data_tests:
           - not_null
   
-  - name: vendor_categories__local
+  - name: vendor_category_mapping__local
     description: "Mapping of transaction vendors to their assigned categories"
     config:
       enabled: "{{ target.name == 'local' }}"

@@ -10,11 +10,11 @@ select
     state,
     balance
 from
-    {% if target.name == 'local' %}
+{% if target.name == 'local' %}
         {{ ref('raw_revolut__personal') }}
     {% else %}
-        {{ source('revolut', 'raw_revolut__personal') }}
-    {% endif %}
+        {{ source('revolut', 'personal') }}
+{% endif %}
 
 union all
 
@@ -30,11 +30,11 @@ select
     state,
     balance
 from
-    {% if target.name == 'local' %}
+{% if target.name == 'local' %}
         {{ ref('raw_revolut__spouse') }}
     {% else %}
-        {{ source('revolut', 'raw_revolut__spouse') }}
-    {% endif %}
+        {{ source('revolut', 'spouse') }}
+{% endif %}
 
 union all
 
@@ -50,8 +50,8 @@ select
     state,
     balance
 from
-    {% if target.name == 'local' %}
+{% if target.name == 'local' %}
         {{ ref('raw_revolut__joint') }}
     {% else %}
-        {{ source('revolut', 'raw_revolut__joint') }}
-    {% endif %}
+        {{ source('revolut', 'joint') }}
+{% endif %}

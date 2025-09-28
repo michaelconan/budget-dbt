@@ -18,8 +18,9 @@ st.set_page_config(layout="wide")
 st.title("Budget Review Dashboard")
 
 # --- Load Data ---
-# Allow dynamic DB path via query param, e.g., ?db=db/etl.duckdb
-db_path = st.query_params.get('db', 'db/local.duckdb')
+# Allow dynamic DB path via query param, e.g., ?db=etl
+db_name = st.query_params.get('db', 'etl')
+db_path = f'db/{db_name}.duckdb'
 try:
     conn = get_db_connection(db_path)
     transactions_df = load_transactions(conn)

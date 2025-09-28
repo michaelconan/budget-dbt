@@ -94,9 +94,9 @@ export-data:
 .PHONY: categorise
 categorise:
 	@echo "Categorising vendors..."
-	duckdb $(DB_PATH) "COPY category_audit TO '$(SEEDS_DIR)/vendor_categories.csv'"
+	duckdb $(DB_PATH) "COPY category_audit TO '$(SEEDS_DIR)/vendor_category_mapping.csv'"
 	# Prepare prompt and provide to Gemini
-	@echo "@dbt/seeds/vendor_categories.csv Replace all TBD categories" > $(TMP_PROMPT)
+	@echo "@dbt/seeds/vendor_category_mapping.csv Replace all TBD categories" > $(TMP_PROMPT)
 	@echo "with an appropriate category from the list of categories in" >> $(TMP_PROMPT)
 	@echo "@dbt/dbt_project.yml and save the file to the same location." >> $(TMP_PROMPT)
 	gemini -p $(TMP_PROMPT)
@@ -130,7 +130,7 @@ fix-lint: ## Auto-fix and lint SQL files
 
 # Data refresh
 .PHONY: refresh
-refresh: load dbt-deps dbt-seed dbt-run dbt-test
+refresh: load dbt-deps dbt-build
 	@echo "Refresh completed!"
 
 # Full setup

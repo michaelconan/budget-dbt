@@ -91,6 +91,10 @@ revolut_columns: &revolut_columns
   - name: balance
     description: "The account balance after the transaction"
     data_type: varchar
+    data_tests:
+      - not_null:
+          config:
+            where: "state = 'COMPLETED'"
 
 test_null_or_empty: &not_null_or_empty
   - not_null
@@ -124,7 +128,8 @@ sources:
         description: "My Financial Picture activity data exported from Bank of America"
         data_tests:
           - dbt_utils.expression_is_true:
-              expression: "try_strptime(date, '%m/%d/%Y') is not null"
+              arguments:
+                expression: "try_strptime(date, '%m/%d/%Y') is not null"
         columns:
           - name: date
             description: "The date on which the transaction was completed"
@@ -158,15 +163,30 @@ sources:
           - name: split_type
             description: "The type of split for categorized transactions"
             data_type: varchar
+            data_tests:
+              - dbt_expectations.expect_column_values_to_be_null
           - name: user_description
             description: "User-defined description for the transaction"
             data_type: varchar
+            data_tests:
+              - dbt_expectations.expect_column_values_to_be_of_type:
+                  arguments:
+                    column_type: varchar
           - name: memo
             description: "Additional memo or notes for the transaction"
             data_type: varchar
+            data_tests:
+              - dbt_expectations.expect_column_values_to_be_of_type:
+                  arguments:
+                    column_type: varchar
           - name: classification
             description: "Transaction classification assigned by Bank of America"
             data_type: varchar
+            data_tests: *not_null_or_empty
           - name: simple_description
             description: "Simplified description of the transaction"
             data_type: varchar
+            data_tests:
+              - dbt_expectations.expect_column_values_to_be_of_type:
+                  arguments:
+                    column_type: varchar
