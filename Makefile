@@ -99,7 +99,7 @@ categorise:
 	@echo "@dbt/seeds/vendor_category_mapping.csv Replace all TBD categories" > $(TMP_PROMPT)
 	@echo "with an appropriate category from the list of categories in" >> $(TMP_PROMPT)
 	@echo "@dbt/dbt_project.yml and save the file to the same location." >> $(TMP_PROMPT)
-	gemini -p $(TMP_PROMPT)
+	cat $(TMP_PROMPT) | gemini
 	@rm $(TMP_PROMPT)
 	@echo "Categorised TBD vendors"
 
