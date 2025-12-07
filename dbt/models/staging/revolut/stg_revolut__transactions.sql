@@ -1,4 +1,12 @@
+-- =============================================================================
+-- STAGE: Revolut Transactions
+-- =============================================================================
+-- Purpose:
+-- This model processes the combined Revolut data, standardizing types,
+-- generating keys, handling transfers, and assigning vendor categories.
+--
 -- 1. Load personal, spouse, joint transactions from Revolut
+--    and standardize column types and formats.
 
 with combined as (
 
@@ -20,6 +28,8 @@ with combined as (
 ),
 
 -- 2. Create a surrogate key for each transaction
+--    Hash relevant fields to create a unique ID.
+--    Filter to only COMPLETED transactions at this stage.
 
 keyed as (
 
@@ -39,6 +49,7 @@ keyed as (
 ),
 
 -- 3. Identify transfers between accounts
+--    Use the project macro to find potential internal transfers.
 
 transfers as (
 
@@ -51,6 +62,7 @@ transfers as (
 ),
 
 -- 4. Select all transactions and indicate if they are transfers
+--    Join back to the transfer identification CTE to flag rows.
 flagged as (
 
     select
@@ -73,6 +85,10 @@ flagged as (
         on k.transaction_key = t.transaction_key
 
 ),
+
+-- 5. Categorise transactions based on description
+--    Attempt to map descriptions to known vendor categories.
+--    If no direct match, use the categorise_keywords macro as a fallback.
 
 categorised as (
 

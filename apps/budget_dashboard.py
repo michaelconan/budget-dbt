@@ -56,7 +56,7 @@ selected_accounts = st.sidebar.multiselect(
 )
 
 # Category slicer
-all_categories = sorted(transactions_df['category'].unique())
+all_categories = sorted(transactions_df['category'].dropna().unique())
 selected_categories = st.sidebar.multiselect(
     "Select Categories",
     options=all_categories,

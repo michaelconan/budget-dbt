@@ -1,3 +1,12 @@
+-- =============================================================================
+-- MART: All Transactions
+-- =============================================================================
+-- Purpose:
+-- This is the main transactions fact table. It unifies data from BofA and Revolut,
+-- standardizes column names, converts currencies to USD, and applies category mappings.
+--
+-- 1. Standardization: Revolut
+--    Project Revolut fields to the target schema.
 with revolut as (
 
     select
@@ -18,6 +27,9 @@ with revolut as (
         {{ ref('stg_revolut__transactions') }}
 
 ),
+
+-- 2. Standardization: Bank of America
+--    Project BofA fields to the target schema.
 
 bofa as (
 
@@ -40,6 +52,9 @@ bofa as (
 
 ),
 
+-- 3. Union Sources
+--    Combine the standardized datasets into one stream.
+
 combined as (
 
     select *
@@ -49,6 +64,10 @@ combined as (
     from bofa
 
 ),
+
+-- 4. Translation & Enrichment
+--    - Convert non-USD amounts to USD using the FX rate.
+--    - Map source-specific categories to the unified high-level categories.
 
 translated as (
 
@@ -78,11 +97,7 @@ translated as (
             c.currency = 'EUR'
             and c.date = gf.date
     left join
-        {% if target.name == 'local' %}
-            {{ ref('category_mapping__local') }}
-        {% else %}
-            {{ ref('category_mapping') }}
-        {% endif %}
+        {{ make_seed('category_mapping') }}
             as cm
         on c.category = case
             when c.source = 'revolut'

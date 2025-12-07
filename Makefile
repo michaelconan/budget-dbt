@@ -84,8 +84,8 @@ test-local: ## Run local tests
 dbt-build: ## Run dbt build (seed, run, test)
 	$(PIPENV) dbt build
 
-.PHONY: export-data
-export-data:
+.PHONY: dump-data
+dump-data:
 	@echo "Exporting transaction data..."
 	@mkdir -p $(DATA_DIR)
 	duckdb $(DB_PATH) "COPY transactions TO '$(DATA_DIR)/transactions.csv'"
@@ -99,7 +99,7 @@ categorise:
 	@echo "@dbt/seeds/vendor_category_mapping.csv Replace all TBD categories" > $(TMP_PROMPT)
 	@echo "with an appropriate category from the list of categories in" >> $(TMP_PROMPT)
 	@echo "@dbt/dbt_project.yml and save the file to the same location." >> $(TMP_PROMPT)
-	gemini -p $(TMP_PROMPT)
+	cat $(TMP_PROMPT) | gemini
 	@rm $(TMP_PROMPT)
 	@echo "Categorised TBD vendors"
 
@@ -140,7 +140,7 @@ full-setup: init load dbt-deps dbt-run
 
 # Development workflow
 .PHONY: dev
-dev: dbt-run dbt-test
+dev: test-local dbt-build
 	@echo "Development workflow completed!"
 
 .PHONY: streamlit-run

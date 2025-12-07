@@ -20,3 +20,24 @@ macros:
       - name: description_column
         description: "The column with the description of the transaction to categorise."
         type: string
+  - name: make_source
+    description: "Adapter-aware macro to load live or mock sources based on target name. When target is 'local', uses ref() to load from mock data; otherwise uses source() to load from the data warehouse."
+    arguments:
+      - name: source_name
+        description: "The source name (e.g., 'bofa', 'revolut')."
+        type: string
+      - name: relation
+        description: "The relation/table name within the source (e.g., 'activity', 'personal')."
+        type: string
+      - name: target_name
+        description: "The target name to check, typically target.name from the dbt context."
+        type: string
+  - name: make_seed
+    description: "Adapter-aware macro to load local or regular seeds based on target name. When target is 'local', uses ref() to load from local seeds (with '__local' suffix); otherwise uses ref() to load from regular seeds."
+    arguments:
+      - name: seed_name
+        description: "The seed name without the '__local' suffix (e.g., 'vendor_category_mapping', 'google_finance__eur_usd')."
+        type: string
+      - name: target_name
+        description: "The target name to check, typically target.name from the dbt context."
+        type: string
