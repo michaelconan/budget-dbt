@@ -2,7 +2,6 @@
 version: 2
 
 revolut_config: &revolut_config
-  enabled: "{{ target.name == 'local' }}"
   quote_columns: false
   column_types:
     type: varchar
@@ -71,10 +70,9 @@ seeds:
   # ============================================================================
   
   # Raw data seeds for testing
-  - name: raw_bofa__activity
+  - name: mock_raw_bofa__activity
     description: "Mock Bank of America transaction data for local testing"
     config:
-      enabled: "{{ target.name == 'local' }}"
       quote_columns: false
       column_types:
         date: varchar
@@ -140,17 +138,17 @@ seeds:
         description: "Simplified description of the transaction"
         data_type: varchar
 
-  - name: raw_revolut__personal
+  - name: mock_raw_revolut__personal
     description: "Mock Revolut personal account transaction data for local testing"
     config: *revolut_config
     columns: *revolut_columns
 
-  - name: raw_revolut__spouse
+  - name: mock_raw_revolut__spouse
     description: "Mock Revolut spouse account transaction data for local testing"
     config: *revolut_config
     columns: *revolut_columns
 
-  - name: raw_revolut__joint
+  - name: mock_raw_revolut__joint
     description: "Mock Revolut joint account transaction data for local testing"
     config: *revolut_config
     columns: *revolut_columns
@@ -159,10 +157,9 @@ seeds:
   # MOCK REFERENCE DATA SEEDS - Available in all environments
   # ============================================================================
   
-  - name: google_finance__eur_usd__local
+  - name: mock_google_finance__eur_usd
     description: "Historical EUR to USD exchange rates from Google Finance"
     config:
-      enabled: "{{ target.name == 'local' }}"
       quote_columns: false
       column_types:
         Date: varchar
@@ -180,10 +177,9 @@ seeds:
         data_tests:
           - not_null
   
-  - name: vendor_category_mapping__local
+  - name: mock_vendor_category_mapping
     description: "Mapping of transaction vendors to their assigned categories"
     config:
-      enabled: "{{ target.name == 'local' }}"
       quote_columns: false
       column_types:
         category: varchar
@@ -201,10 +197,9 @@ seeds:
         data_tests:
           - not_null
   
-  - name: category_mapping__local
+  - name: mock_category_mapping
     description: "Mapping between source system categories and standardized category types"
     config:
-      enabled: "{{ target.name == 'local' }}"
       quote_columns: false
       column_types:
         type: varchar

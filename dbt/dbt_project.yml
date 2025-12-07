@@ -22,6 +22,13 @@ models:
     marts:
       +materialized: table
 
+seeds:
+  budget_dbt:
+    mock:
+      +schema: mock
+      +tags: ["local"]
+      +enabled: "{{ target.name == 'local' }}"
+
 vars:
 
   is_local: "{{ target.name == 'local' }}"

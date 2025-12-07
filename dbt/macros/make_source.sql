@@ -4,7 +4,7 @@
 {% macro make_source(source_name, relation) -%}
     {% set ref_name = source_name ~ '__' ~ relation %}
     {% if target.name == 'local' %}
-        {{ ref(ref_name) }}
+        {{ ref('mock_raw_' ~ ref_name) }}
     {% else %}
         {{ source(source_name, relation) }}
     {% endif %}

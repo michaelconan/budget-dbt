@@ -140,7 +140,7 @@ full-setup: init load dbt-deps dbt-run
 
 # Development workflow
 .PHONY: dev
-dev: dbt-run dbt-test
+dev: test-local dbt-build
 	@echo "Development workflow completed!"
 
 .PHONY: streamlit-run
