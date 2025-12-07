@@ -84,8 +84,8 @@ test-local: ## Run local tests
 dbt-build: ## Run dbt build (seed, run, test)
 	$(PIPENV) dbt build
 
-.PHONY: export-data
-export-data:
+.PHONY: dump-data
+dump-data:
 	@echo "Exporting transaction data..."
 	@mkdir -p $(DATA_DIR)
 	duckdb $(DB_PATH) "COPY transactions TO '$(DATA_DIR)/transactions.csv'"

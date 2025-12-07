@@ -1,4 +1,13 @@
--- Generate full range of dates as Google Finance skips certain dates
+-- =============================================================================
+-- REFERENCE: FX Rates (EUR to USD)
+-- =============================================================================
+-- Purpose:
+-- This model generates a daily exchange rate table for EUR to USD.
+-- It handles missing data points (e.g. weekends/holidays) by forward-filling
+-- the last known rate.
+--
+-- 1. Generate full range of dates as Google Finance skips certain dates
+
 {% set current_date = modules.datetime.date.today().isoformat() %}
 {% set tomorrow = (modules.datetime.date.today() + modules.datetime.timedelta(days=1)).isoformat() %}
 
@@ -10,22 +19,23 @@ with date_scaffold as (
        )
     }}),
 
+-- 2. Join the date spine with the raw Google Finance data
+--    This leaves NULLs for days where no stock market data exists.
+
 rate_data as (
     select
         ds.date_day as date,
         gf.close as rate
     from date_scaffold as ds
     left join
-        {% if target.name == 'local' %}
-            {{ ref('google_finance__eur_usd__local') }}
-        {% else %}
-            {{ ref('google_finance__eur_usd') }}
-        {% endif %}
-        as gf
+        {{ make_seed('google_finance__eur_usd') }} as gf
         on ds.date_day = gf.date
 ),
 
--- Create groups for consecutive NULL values
+-- 3. Create groups for consecutive NULL values
+--    This technique assigns a group_id to each run of NULLs,
+--    associating them with the preceding non-NULL value.
+
 with_groups as (
     select
         date,
@@ -36,7 +46,9 @@ with_groups as (
     from rate_data
 ),
 
--- Fill NULLs with the last known value within each group
+-- 4. Fill NULLs with the last known value within each group
+--    Forward-fill the rate using the group_id window.
+
 filled_rates as (
     select
         date,

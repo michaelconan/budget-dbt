@@ -2,10 +2,9 @@
 data/**/*.csv
 # Seed data files
 dbt/seeds/*.csv
-# SQLite database files
-db/*.db
-db/*.duckdb
-data/local.duckdb
+# Local database files
+*.db
+*.duckdb
 coverage.json
 # Python venv
 .venv

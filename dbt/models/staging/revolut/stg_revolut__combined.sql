@@ -1,3 +1,12 @@
+-- =============================================================================
+-- STAGE: Revolut Combined Transactions
+-- =============================================================================
+-- Purpose:
+-- This model consolidates transaction data from three different Revolut account
+-- sources: Personal, Spouse, and Joint. It unions them into a single dataset
+-- for downstream processing.
+--
+-- 1. Union data from all account types
 select
     type,
     product,
@@ -10,11 +19,7 @@ select
     state,
     balance
 from
-{% if target.name == 'local' %}
-        {{ ref('raw_revolut__personal') }}
-    {% else %}
-        {{ source('revolut', 'personal') }}
-{% endif %}
+    {{ make_source('revolut', 'personal') }}
 
 union all
 
@@ -30,11 +35,7 @@ select
     state,
     balance
 from
-{% if target.name == 'local' %}
-        {{ ref('raw_revolut__spouse') }}
-    {% else %}
-        {{ source('revolut', 'spouse') }}
-{% endif %}
+    {{ make_source('revolut', 'spouse') }}
 
 union all
 
@@ -50,8 +51,4 @@ select
     state,
     balance
 from
-{% if target.name == 'local' %}
-        {{ ref('raw_revolut__joint') }}
-    {% else %}
-        {{ source('revolut', 'joint') }}
-{% endif %}
+    {{ make_source('revolut', 'joint') }}
