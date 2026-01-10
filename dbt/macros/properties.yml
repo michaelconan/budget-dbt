@@ -41,3 +41,9 @@ macros:
       - name: target_name
         description: "The target name to check, typically target.name from the dbt context."
         type: string
+  - name: standardise_ascii
+    description: "Standardise strings to ASCII by replacing non-ASCII quotes."
+    arguments:
+      - name: column_name
+        description: "The column to standardise."
+        type: string

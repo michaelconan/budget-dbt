@@ -5,7 +5,7 @@ models:
   - name: stg_revolut__combined
     description: "Combined raw Revolut transactions from personal, spouse, and joint accounts with standardized product names"
     columns:
-      - name: type
+      - name: transaction_type
         description: "The kind of the transaction"
         data_type: text
         data_tests:
@@ -26,8 +26,8 @@ models:
         data_tests:
           - not_null:
               config:
-                where: "state = 'COMPLETED'"
-      - name: description
+                where: "transaction_state = 'COMPLETED'"
+      - name: transaction_description
         description: "The transaction description provided by Revolut"
         data_type: text
         data_tests:
@@ -47,7 +47,7 @@ models:
         data_type: text
         data_tests:
           - not_null
-      - name: state
+      - name: transaction_state
         description: "Whether the transaction is posted, pending, or reverted"
         data_type: text
         data_tests:
@@ -58,7 +58,7 @@ models:
         data_tests:
           - not_null:
               config:
-                where: "state = 'COMPLETED'"
+                where: "transaction_state = 'COMPLETED'"
   - name: stg_revolut__transactions
     description: "Transactions from Revolut personal and joint accounts and pockets"
     columns:
@@ -68,7 +68,7 @@ models:
         data_tests:
           - not_null
           - unique
-      - name: type
+      - name: transaction_type
         description: "The kind of the transaction"
         data_type: text
         data_tests:
@@ -88,7 +88,7 @@ models:
         data_type: text
         data_tests:
           - not_null
-      - name: description
+      - name: transaction_description
         description: "The transaction description provided by Revolut"
         data_type: text
         data_tests:
@@ -108,7 +108,7 @@ models:
         data_type: text
         data_tests:
           - not_null
-      - name: state
+      - name: transaction_state
         description: "Whether the transaction is posted or reverted"
         data_type: text
         data_tests:

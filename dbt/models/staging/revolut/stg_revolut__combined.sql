@@ -8,15 +8,15 @@
 --
 -- 1. Union data from all account types
 select
-    type,
+    type as transaction_type,
     product,
     started_date,
     completed_date,
-    description,
+    description as transaction_description,
     amount,
     fee,
     currency,
-    state,
+    state as transaction_state,
     balance
 from
     {{ make_source('revolut', 'personal') }}

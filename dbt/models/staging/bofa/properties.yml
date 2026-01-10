@@ -46,7 +46,7 @@ models:
         data_type: text
         data_tests:
           - not_null
-      - name: date
+      - name: transaction_date
         description: "The transaction date in ISO format (YYYY-MM-DD)"
         data_type: text
         data_tests:

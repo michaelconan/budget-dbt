@@ -9,7 +9,9 @@
 -- 1. Generate full range of dates as Google Finance skips certain dates
 
 {% set current_date = modules.datetime.date.today().isoformat() %}
-{% set tomorrow = (modules.datetime.date.today() + modules.datetime.timedelta(days=1)).isoformat() %}
+{% set tomorrow = (
+    modules.datetime.date.today() + modules.datetime.timedelta(days=1)
+).isoformat() %}
 
 with date_scaffold as (
     {{ dbt_utils.date_spine(
@@ -24,7 +26,7 @@ with date_scaffold as (
 
 rate_data as (
     select
-        ds.date_day as date,
+        ds.date_day as transaction_date,
         gf.close as rate
     from date_scaffold as ds
     left join
@@ -38,10 +40,10 @@ rate_data as (
 
 with_groups as (
     select
-        date,
+        transaction_date,
         rate,
         sum(case when rate is not null then 1 else 0 end) over (
-            order by date rows between unbounded preceding and current row
+            order by transaction_date rows between unbounded preceding and current row
         ) as group_id
     from rate_data
 ),
@@ -51,12 +53,12 @@ with_groups as (
 
 filled_rates as (
     select
-        date,
+        transaction_date,
         coalesce(
             rate,
             first_value(rate) over (
                 partition by group_id
-                order by date
+                order by transaction_date
                 rows between unbounded preceding and current row
             )
         ) as rate
