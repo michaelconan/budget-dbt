@@ -2,7 +2,7 @@
 dialect = duckdb
 templater = dbt
 runaway_limit = 10
-max_line_length = 80
+max_line_length = 100
 indent_unit = space
 
 [sqlfluff:indentation]
@@ -33,8 +33,8 @@ capitalisation_policy = lower
 [sqlfluff:rules:capitalisation.literals]
 capitalisation_policy = lower
 
-[sqlfluff:rules:ambiguous.column_references]  # Number in group by
-group_by_and_order_by_style = implicit
+[sqlfluff:rules:ambiguous.column_references]
+group_by_and_order_by_style = consistent
 
 [sqlfluff:templater:jinja:macros]
 # Macros provided as builtins for dbt projects
@@ -46,3 +46,8 @@ dbt_is_incremental = {% macro is_incremental() %}True{% endmacro %}
 
 [sqlfluff:templater:jinja]
 apply_dbt_builtins = True
+
+[sqlfluff:templater:dbt]
+project_dir = dbt
+profiles_dir = dbt
+target = fluff

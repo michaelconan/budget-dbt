@@ -15,13 +15,13 @@ with revolut as (
         'revolut' as source,
         'Revolut' as bank,
         'Bank' as account_type,
-        product as account,
-        completed_date as date,
-        description,
+        product as account_name,
+        completed_date as transaction_date,
+        transaction_description,
         category,
         amount + fee as amount,
         currency,
-        state as status,
+        transaction_state as transaction_status,
         is_transfer
     from
         {{ ref('stg_revolut__transactions') }}
@@ -39,13 +39,14 @@ bofa as (
         'bofa' as source,
         bank_name as bank,
         account_type,
-        account_name as account,
-        date,
-        coalesce(simple_description, original_description) as description,
+        account_name,
+        transaction_date,
+        coalesce(simple_description, original_description)
+            as transaction_description,
         category,
         amount,
         currency,
-        status,
+        status as transaction_status,
         is_transfer
     from
         {{ ref('stg_bofa__transactions') }}
@@ -95,7 +96,7 @@ translated as (
         {{ ref('fx_rates') }} as gf
         on
             c.currency = 'EUR'
-            and c.date = gf.date
+            and c.transaction_date = gf.transaction_date
     left join
         {{ make_seed('category_mapping') }}
             as cm
@@ -108,5 +109,21 @@ translated as (
 
 )
 
-select *
+select
+    transaction_key,
+    country,
+    source,
+    bank,
+    account_type,
+    account_name,
+    transaction_date,
+    transaction_description,
+    category,
+    amount,
+    currency,
+    transaction_status,
+    is_transfer,
+    category_type,
+    fx_rate,
+    amount_usd
 from translated

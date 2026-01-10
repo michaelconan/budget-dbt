@@ -19,4 +19,13 @@ budget_dbt:
         - "httpfs"
         - "json"
         - "icu"
+    fluff:
+      type: duckdb
+      path: '../db/local.duckdb'
+      database: 'local'
+      threads: 24
+      extensions:
+        - "httpfs"
+        - "json"
+        - "icu"
 

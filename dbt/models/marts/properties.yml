@@ -36,17 +36,17 @@ models:
         data_type: text
         data_tests:
           - not_null
-      - name: account
+      - name: account_name
         description: "The account name or identifier"
         data_type: text
         data_tests:
           - not_null
-      - name: date
+      - name: transaction_date
         description: "The transaction date in ISO format (YYYY-MM-DD)"
         data_type: text
         data_tests:
           - not_null
-      - name: description
+      - name: transaction_description
         description: "The transaction description (original or simplified)"
         data_type: text
         data_tests:
@@ -68,7 +68,7 @@ models:
         data_type: text
         data_tests:
           - not_null
-      - name: status
+      - name: transaction_status
         description: "The posting state of the transaction"
         data_type: text
         data_tests:

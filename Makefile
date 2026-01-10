@@ -91,42 +91,49 @@ dump-data:
 	duckdb $(DB_PATH) "COPY transactions TO '$(DATA_DIR)/transactions.csv'"
 	@echo "Transaction data exported to $(DATA_DIR)/transactions.csv"
 
-.PHONY: categorise
-categorise:
-	@echo "Categorising vendors..."
-	duckdb $(DB_PATH) "COPY category_audit TO '$(SEEDS_DIR)/vendor_category_mapping.csv'"
-	# Prepare prompt and provide to Gemini
+.PHONY: dump-vendors
+dump-vendors: ## Export vendor category mapping to CSV
+	@echo "Exporting vendors for categorisation..."
+	@duckdb $(DB_PATH) "COPY (SELECT * FROM category_audit ORDER BY 1,2 ASC) TO '$(SEEDS_DIR)/vendor_category_mapping.csv'"
+
+.PHONY: categorise-vendors
+categorise-vendors: ## Run Gemini to categorise TBD vendors
+	@echo "Categorising vendors with Gemini..."
 	@echo "@dbt/seeds/vendor_category_mapping.csv Replace all TBD categories" > $(TMP_PROMPT)
 	@echo "with an appropriate category from the list of categories in" >> $(TMP_PROMPT)
 	@echo "@dbt/dbt_project.yml and save the file to the same location." >> $(TMP_PROMPT)
-	cat $(TMP_PROMPT) | gemini
+	@cat $(TMP_PROMPT) | gemini
 	@rm $(TMP_PROMPT)
 	@echo "Categorised TBD vendors"
 
+.PHONY: categorise
+categorise: dump-vendors categorise-vendors ## Run the full vendor categorisation workflow
+	@echo "Categorisation workflow completed."
+
 .PHONY: doc-coverage
 doc-coverage:
-	pipenv run dbt-coverage compute doc --run-artifacts-dir dbt/target --cov-format markdown
+	@pipenv run dbt-coverage compute doc --run-artifacts-dir dbt/target --cov-format markdown
 
 .PHONY: test-coverage
 test-coverage:
-	pipenv run dbt-coverage compute test --run-artifacts-dir dbt/target --cov-format markdown
+	@pipenv run dbt-coverage compute test --run-artifacts-dir dbt/target --cov-format markdown
 
 ## Documentation (from docs.sh)
 .PHONY: docs
 docs: ## Generate static dbt documentation
 	@echo "Generating static documentation..."
-	$(PIPENV) dbt docs generate --static
+	@$(PIPENV) dbt docs generate --static
 	@mkdir -p $(DOCS_DIR)
-	cp dbt/target/static_index.html $(DOCS_DIR)/index.html
+	@cp dbt/target/static_index.html $(DOCS_DIR)/index.html
 	@echo "Static documentation generated at $(DOCS_DIR)/index.html"
 
 ## Code Quality (from fix-lint.sh)
 .PHONY: fix-lint
 fix-lint: ## Auto-fix and lint SQL files
 	@echo "Auto-fixing SQL files..."
-	$(PIPENV) sqlfluff fix dbt/
+	@$(PIPENV) sqlfluff fix dbt/
 	@echo "Linting SQL files..."
-	$(PIPENV) sqlfluff lint dbt/
+	@$(PIPENV) sqlfluff lint dbt/
 
 # Data refresh
 .PHONY: refresh
@@ -145,9 +152,9 @@ dev: test-local dbt-build
 
 .PHONY: streamlit-run
 streamlit-run: ## Run the streamlit app
-	$(PIPENV) streamlit run apps/budget_dashboard.py
+	@$(PIPENV) streamlit run apps/budget_dashboard.py
 
 ## Utilities
 .PHONY: db-shell
-db-shell: ## Open SQLite shell for the database
-	duckdb $(DB_PATH)
+db-shell: ## Open DuckDB shell for the database
+	@duckdb $(DB_PATH)

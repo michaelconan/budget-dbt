@@ -12,15 +12,16 @@ with combined as (
 
     select
         -- Standardize transaction types to UPPER_CASE with underscores
-        upper(replace("type", ' ', '_')) as "type",
+        upper(replace(transaction_type, ' ', '_')) as transaction_type,
         product,
         started_date,
         completed_date,
-        "description",
+        {{ standardise_ascii('trim(transaction_description)') }}
+            as transaction_description,
         cast(replace(cast(amount as varchar), ',', '') as double) as amount,
         cast(replace(cast(fee as varchar), ',', '') as double) as fee,
         currency,
-        "state",
+        transaction_state,
         cast(replace(cast(balance as varchar), ',', '') as double) as balance
     from
         {{ ref('stg_revolut__combined') }}
@@ -35,7 +36,7 @@ keyed as (
 
     select
         {{ dbt_utils.generate_surrogate_key(
-                ['product', 'completed_date', 'description', 'amount', 'balance']
+                ['product', 'completed_date', 'transaction_description', 'amount', 'balance']
             )
         }}
             as transaction_key,
@@ -44,7 +45,7 @@ keyed as (
         combined
     -- only include completed transactions (exclude pending or reverted)
     where
-        "state" = 'COMPLETED'
+        transaction_state = 'COMPLETED'
 
 ),
 
@@ -58,7 +59,6 @@ transfers as (
             'keyed', 'completed_date', 'product', 'amount'
         )
     }}
-
 ),
 
 -- 4. Select all transactions and indicate if they are transfers
@@ -67,15 +67,17 @@ flagged as (
 
     select
         cast(k.transaction_key as text) as transaction_key,
-        k.type,
+        k.transaction_type,
         cast(k.product as text) as product,
         cast(substr(cast(k.started_date as varchar), 1, 10) as text) as started_date,
-        cast(substr(cast(k.completed_date as varchar), 1, 10) as text) as completed_date,
-        k.description,
+        cast(
+            substr(cast(k.completed_date as varchar), 1, 10) as text
+        ) as completed_date,
+        k.transaction_description,
         k.amount,
         k.fee,
         k.currency,
-        k.state,
+        k.transaction_state,
         k.balance,
         (t.transaction_key is not null) as is_transfer
     from
@@ -94,15 +96,15 @@ categorised as (
 
     select
         f.transaction_key,
-        f.type,
+        f.transaction_type,
         f.product,
         f.started_date,
         f.completed_date,
-        f.description,
+        f.transaction_description,
         f.amount,
         f.fee,
         f.currency,
-        f.state,
+        f.transaction_state,
         f.balance,
         f.is_transfer,
         -- use the mapped vendor category if it exists, otherwise use the
@@ -110,29 +112,43 @@ categorised as (
         min(
             coalesce(
                 vc.category,
-                {{ categorise_keywords('f.description') }}
+                {{ categorise_keywords('f.transaction_description') }}
             )
         ) as category
     from
         flagged as f
     left join
         {{ ref('vendor_categories') }} as vc
-        on lower(f.description) like '%' || lower(vc.vendor) || '%'
+        on lower(f.transaction_description) like '%' || lower(vc.vendor) || '%'
     group by
         f.transaction_key,
-        f.type,
+        f.transaction_type,
         f.product,
         f.started_date,
         f.completed_date,
-        f.description,
+        f.transaction_description,
         f.amount,
         f.fee,
         f.currency,
-        f.state,
+        f.transaction_state,
         f.balance,
         f.is_transfer
+
 )
 
-select *
+select
+    transaction_key,
+    transaction_type,
+    product,
+    started_date,
+    completed_date,
+    transaction_description,
+    amount,
+    fee,
+    currency,
+    transaction_state,
+    balance,
+    is_transfer,
+    category
 from categorised
 order by completed_date, product

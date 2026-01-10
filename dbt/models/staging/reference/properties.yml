@@ -4,7 +4,7 @@ models:
   - name: fx_rates
     description: "Complete daily EUR to USD exchange rates with forward-fill for missing dates"
     columns:
-      - name: date
+      - name: transaction_date
         description: "The date of the foreign exchange rate"
         data_type: date
         data_tests:
@@ -19,7 +19,7 @@ models:
               arguments:
                 min_value: 0.5
                 max_value: 2.0
-                where: "date >= '2023-01-01'"
+                where: "transaction_date >= '2023-01-01'"
   
   - name: vendor_categories
     description: "Vendor category mappings for transaction categorization (conditionally references local seed or production table)"

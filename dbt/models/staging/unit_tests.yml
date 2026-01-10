@@ -5,16 +5,16 @@ unit_tests:
     given:
       - input: ref('stg_revolut__combined')
         rows:
-          - {type: 'TRANSFER', product: 'Current', completed_date: '2025-01-01 00:00:00', amount: '100.0', currency: 'EUR', state: 'COMPLETED', started_date: '2025-01-01 00:00:00', description: 'test', fee: '0.0', balance: '100.0'}
-          - {type: 'CARD_PAYMENT', product: 'Pocket', completed_date: '2025-01-02 00:00:00', amount: '100.0', currency: 'EUR', state: 'COMPLETED', started_date: '2025-01-02 00:00:00', description: 'test', fee: '0.0', balance: '200.0'}
-          - {type: 'TRANSFER', product: 'Joint', completed_date: '2025-01-01 00:00:00', amount: '-100.0', currency: 'EUR', state: 'COMPLETED', started_date: '2025-01-01 00:00:00', description: 'test', fee: '0.0', balance: '0.0'}
-          - {type: 'CARD_PAYMENT', product: 'Spouse', completed_date: '2025-01-03 00:00:00', amount: '100.0', currency: 'EUR', state: 'COMPLETED', started_date: '2025-01-03 00:00:00', description: 'test', fee: '0.0', balance: '100.0'}
+          - {transaction_type: 'TRANSFER', product: 'Current', completed_date: '2025-01-01 00:00:00', amount: '100.0', currency: 'EUR', transaction_state: 'COMPLETED', started_date: '2025-01-01 00:00:00', transaction_description: 'test', fee: '0.0', balance: '100.0'}
+          - {transaction_type: 'CARD_PAYMENT', product: 'Pocket', completed_date: '2025-01-02 00:00:00', amount: '100.0', currency: 'EUR', transaction_state: 'COMPLETED', started_date: '2025-01-02 00:00:00', transaction_description: 'test', fee: '0.0', balance: '200.0'}
+          - {transaction_type: 'TRANSFER', product: 'Joint', completed_date: '2025-01-01 00:00:00', amount: '-100.0', currency: 'EUR', transaction_state: 'COMPLETED', started_date: '2025-01-01 00:00:00', transaction_description: 'test', fee: '0.0', balance: '0.0'}
+          - {transaction_type: 'CARD_PAYMENT', product: 'Spouse', completed_date: '2025-01-03 00:00:00', amount: '100.0', currency: 'EUR', transaction_state: 'COMPLETED', started_date: '2025-01-03 00:00:00', transaction_description: 'test', fee: '0.0', balance: '100.0'}
       - input: ref('vendor_categories')
         rows:
           - {vendor: 'test', category: 'test'}
     expect:
       rows:
-        - {product: 'Current', completed_date: '2025-01-01', amount: 100.0, currency: 'EUR', state: 'COMPLETED', is_transfer: true}
-        - {product: 'Joint', completed_date: '2025-01-01', amount: -100.0, currency: 'EUR', state: 'COMPLETED', is_transfer: true}
-        - {product: 'Pocket', completed_date: '2025-01-02', amount: 100.0, currency: 'EUR', state: 'COMPLETED', is_transfer: false}
-        - {product: 'Spouse', completed_date: '2025-01-03', amount: 100.0, currency: 'EUR', state: 'COMPLETED', is_transfer: false}
+        - {product: 'Current', completed_date: '2025-01-01', amount: 100.0, currency: 'EUR', transaction_state: 'COMPLETED', is_transfer: true}
+        - {product: 'Joint', completed_date: '2025-01-01', amount: -100.0, currency: 'EUR', transaction_state: 'COMPLETED', is_transfer: true}
+        - {product: 'Pocket', completed_date: '2025-01-02', amount: 100.0, currency: 'EUR', transaction_state: 'COMPLETED', is_transfer: false}
+        - {product: 'Spouse', completed_date: '2025-01-03', amount: 100.0, currency: 'EUR', transaction_state: 'COMPLETED', is_transfer: false}

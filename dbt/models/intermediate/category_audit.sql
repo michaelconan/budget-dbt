@@ -22,11 +22,11 @@ with existing_vendors as (
 new_uncategorized as (
     select distinct
         'TBD' as category,
-        description as vendor
+        transaction_description as vendor
     from {{ ref('transactions') }}
     where
         category is null
-        and description not in (select vendor from existing_vendors)
+        and transaction_description not in (select ev.vendor from existing_vendors as ev)
 )
 
 select

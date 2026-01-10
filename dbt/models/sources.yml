@@ -31,8 +31,12 @@ revolut_columns: &revolut_columns
               - Card Refund
               - Charge
               - Exchange
+              - Fee
               - Interest
               - Rev Payment
+              - Reward
+              - Tax
+              - Temp Block
               - Topup
               - Transfer
   - name: product

@@ -31,13 +31,13 @@ with transactions as (
             substr(date, 7, 4), '-',
             substr(date, 1, 2), '-',
             substr(date, 4, 2)
-        ) as date,
-        trim(original_description) as original_description,
+        ) as transaction_date,
+        {{ standardise_ascii('trim(original_description)') }} as original_description,
         nullif(trim(split_type), '') as split_type,
         nullif(trim(user_description), '') as user_description,
         nullif(trim(memo), '') as memo,
         nullif(trim(classification), '') as classification,
-        nullif(trim(simple_description), '') as simple_description
+        {{ standardise_ascii("nullif(trim(simple_description), '')") }} as simple_description
     from
         {{ make_source('bofa', 'activity') }}
 
@@ -52,7 +52,7 @@ numbered as (
     select
         *,
         row_number() over (
-            partition by account_name, date, original_description, amount
+            partition by account_name, transaction_date, original_description, amount
             order by account_name
         ) as duplicate_id
     from transactions
@@ -67,7 +67,7 @@ keyed as (
 
     select
         {{ dbt_utils.generate_surrogate_key(
-                ['account_name', 'date', 'original_description', 'amount', 'duplicate_id']
+                ['account_name', 'transaction_date', 'original_description', 'amount', 'duplicate_id']
             )
         }}
             as transaction_key,
@@ -83,7 +83,7 @@ keyed as (
 
 transfers as (
 
-    {{ get_transfer_transactions('keyed', 'date', 'account_name', 'amount') }}),
+    {{ get_transfer_transactions('keyed', 'transaction_date', 'account_name', 'amount') }}),
 
 -- 5. Final projection and transfer flagging
 -- Select the final columns and join with the transfers CTE to flag
@@ -100,7 +100,7 @@ flagged as (
         cast(k.bank_name as text) as bank_name,
         cast(k.account_type as text) as account_type,
         cast(k.account_name as text) as account_name,
-        cast(k.date as text) as date,
+        cast(k.transaction_date as text) as transaction_date,
         k.original_description,
         k.split_type,
         k.user_description,
