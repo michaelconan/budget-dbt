@@ -68,9 +68,7 @@ dbt-test: ## Run dbt tests
 .PHONY: test-local
 test-local: ## Run local tests
 	$(PIPENV) dbt deps; \
-	$(PIPENV) dbt seed --target local; \
-	$(PIPENV) dbt run --target local; \
-	$(PIPENV) dbt test --target local; \
+	$(PIPENV) dbt build --target local --exclude "source:*"; \
 	$(PIPENV) dbt docs generate --target local
 
 .PHONY: dbt-build
