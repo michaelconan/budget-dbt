@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import duckdb
+import altair as alt
 
 # --- Database Connection ---
 @st.cache_resource
@@ -33,35 +34,59 @@ if transactions_df.empty:
     st.stop()
 
 # Convert date column to datetime
-transactions_df['date'] = pd.to_datetime(transactions_df['date'])
+transactions_df['transaction_date'] = pd.to_datetime(transactions_df['transaction_date'])
 
 # --- Sidebar Slicers ---
 st.sidebar.header("Filters")
 
 # Month slicer
-transactions_df['month_year'] = transactions_df['date'].dt.to_period('M').astype(str)
+transactions_df['month_year'] = transactions_df['transaction_date'].dt.to_period('M').astype(str)
 all_months = sorted(transactions_df['month_year'].unique(), reverse=True)
+m1, m2 = st.sidebar.columns(2)
+with m1:
+    if st.button("Select all", key="months_select_all"):
+        st.session_state["filter_months"] = list(all_months)
+with m2:
+    if st.button("Deselect all", key="months_deselect_all"):
+        st.session_state["filter_months"] = []
 selected_months = st.sidebar.multiselect(
     "Select Months to Include",
     options=all_months,
-    default=all_months[:3],  # Default to the last 3 months
+    default=st.session_state.get("filter_months", all_months[:3]),
 )
+st.session_state["filter_months"] = selected_months
 
-# Account slicer
-all_accounts = sorted(transactions_df['account'].unique())
+# Account slicer (mart uses account_name)
+all_accounts = sorted(transactions_df['account_name'].dropna().unique())
+a1, a2 = st.sidebar.columns(2)
+with a1:
+    if st.button("Select all", key="accounts_select_all"):
+        st.session_state["filter_accounts"] = list(all_accounts)
+with a2:
+    if st.button("Deselect all", key="accounts_deselect_all"):
+        st.session_state["filter_accounts"] = []
 selected_accounts = st.sidebar.multiselect(
     "Select Accounts",
     options=all_accounts,
-    default=all_accounts,
+    default=st.session_state.get("filter_accounts", all_accounts),
 )
+st.session_state["filter_accounts"] = selected_accounts
 
 # Category slicer
 all_categories = sorted(transactions_df['category'].dropna().unique())
+c1, c2 = st.sidebar.columns(2)
+with c1:
+    if st.button("Select all", key="categories_select_all"):
+        st.session_state["filter_categories"] = list(all_categories)
+with c2:
+    if st.button("Deselect all", key="categories_deselect_all"):
+        st.session_state["filter_categories"] = []
 selected_categories = st.sidebar.multiselect(
     "Select Categories",
     options=all_categories,
-    default=all_categories,
+    default=st.session_state.get("filter_categories", all_categories),
 )
+st.session_state["filter_categories"] = selected_categories
 
 # --- Filter Data ---
 if not selected_months:
@@ -70,7 +95,7 @@ if not selected_months:
 
 filtered_df = transactions_df[
     (transactions_df['month_year'].isin(selected_months)) &
-    (transactions_df['account'].isin(selected_accounts)) &
+    (transactions_df['account_name'].isin(selected_accounts)) &
     (transactions_df['category'].isin(selected_categories))
 ]
 
@@ -90,24 +115,36 @@ col1.metric("Total Inflows", f"${inflows:,.2f}")
 col2.metric("Total Outflows", f"${outflows:,.2f}")
 col3.metric("Net Flow", f"${inflows + outflows:,.2f}")
 
-# Summary by Category
+# Summary by Category (sorted by total amount, largest first)
 st.header("Summary by Category")
-category_summary = filtered_df.groupby('category')['amount_usd'].sum().sort_values()
-st.bar_chart(category_summary)
+category_summary = (
+    filtered_df.groupby('category', as_index=False)['amount_usd']
+    .sum()
+    .sort_values('amount_usd', ascending=False)
+)
+chart = (
+    alt.Chart(category_summary)
+    .mark_bar()
+    .encode(
+        x="amount_usd:Q",
+        y=alt.Y("category:N", sort="-x"),  # sort by amount descending
+    )
+)
+st.altair_chart(chart, use_container_width=True)
 
 # Period Comparison
 st.header("Period Comparison")
 period_type = st.selectbox("Compare by", ["Month", "Quarter", "Year"])
 
 # Ensure dataframe is sorted by date for correct period calculation
-df_for_comparison = filtered_df.sort_values('date').copy()
+df_for_comparison = filtered_df.sort_values('transaction_date').copy()
 
 if period_type == 'Month':
-    df_for_comparison['period'] = df_for_comparison['date'].dt.to_period('M')
+    df_for_comparison['period'] = df_for_comparison['transaction_date'].dt.to_period('M')
 elif period_type == 'Quarter':
-    df_for_comparison['period'] = df_for_comparison['date'].dt.to_period('Q')
+    df_for_comparison['period'] = df_for_comparison['transaction_date'].dt.to_period('Q')
 else:  # Year
-    df_for_comparison['period'] = df_for_comparison['date'].dt.to_period('Y')
+    df_for_comparison['period'] = df_for_comparison['transaction_date'].dt.to_period('Y')
 
 # Get the latest period with data from the *filtered* df
 latest_period = df_for_comparison['period'].max()
