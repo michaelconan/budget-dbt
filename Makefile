@@ -10,6 +10,7 @@ TMP_PROMPT = prompt.txt
 
 # Python environment
 PIPENV = pipenv run
+COV_ARGS = --run-artifacts-dir dbt/target --cov-format markdown
 
 # Default target
 .DEFAULT_GOAL := help
@@ -27,57 +28,48 @@ help: ## Show this help message
 install: ## Install Python dependencies using pipenv
 	pipenv install --dev
 
-# Initialize database
 .PHONY: init
-init:
+init: ## Initialize DuckDB database
 	@echo "Initializing DuckDB database..."
 	@./script/init_db.sh $(DB_PATH)
 
-# Load data
 .PHONY: load
-load:
+load: ## Load data into DuckDB
 	@echo "Loading data into DuckDB..."
 	@./script/load.sh $(DB_PATH) $(DATA_DIR)
 
-# Clean artifacts
 .PHONY: clean
-clean:
+clean: ## Clean dbt artifacts and database
 	@echo "Cleaning dbt artifacts..."
 	$(PIPENV) dbt clean
 	@echo "Cleaning database..."
 	@rm -f $(DB_PATH)
 	@rm -rf db/temp
 
-# Install dbt packages
 .PHONY: dbt-deps
-dbt-deps:
+dbt-deps: ## Install dbt packages
 	@echo "Installing dbt packages..."
 	$(PIPENV) dbt deps
 
-# Run dbt models
 .PHONY: dbt-run
-dbt-run:
+dbt-run: ## Run dbt models
 	@echo "Running dbt models..."
 	$(PIPENV) dbt run
 
-# Run dbt seed
 .PHONY: dbt-seed
-dbt-seed:
+dbt-seed: ## Run dbt seed
 	@echo "Running dbt seed..."
 	$(PIPENV) dbt seed
 
-# Run dbt tests
 .PHONY: dbt-test
-dbt-test:
+dbt-test: ## Run dbt tests
 	@echo "Running dbt tests..."
 	$(PIPENV) dbt test
 
 .PHONY: test-local
 test-local: ## Run local tests
 	$(PIPENV) dbt deps; \
-	$(PIPENV) dbt seed --target local; \
-	$(PIPENV) dbt run --target local; \
-	$(PIPENV) dbt test --target local; \
+	$(PIPENV) dbt build --target local --exclude "source:*"; \
 	$(PIPENV) dbt docs generate --target local
 
 .PHONY: dbt-build
@@ -85,7 +77,7 @@ dbt-build: ## Run dbt build (seed, run, test)
 	$(PIPENV) dbt build
 
 .PHONY: dump-data
-dump-data:
+dump-data: ## Export transaction data to CSV
 	@echo "Exporting transaction data..."
 	@mkdir -p $(DATA_DIR)
 	duckdb $(DB_PATH) "COPY transactions TO '$(DATA_DIR)/transactions.csv'"
@@ -111,12 +103,12 @@ categorise: dump-vendors categorise-vendors ## Run the full vendor categorisatio
 	@echo "Categorisation workflow completed."
 
 .PHONY: doc-coverage
-doc-coverage:
-	@pipenv run dbt-coverage compute doc --run-artifacts-dir dbt/target --cov-format markdown
+doc-coverage: ## Compute dbt doc coverage
+	@pipenv run dbt-coverage compute doc $(COV_ARGS)
 
 .PHONY: test-coverage
-test-coverage:
-	@pipenv run dbt-coverage compute test --run-artifacts-dir dbt/target --cov-format markdown
+test-coverage: ## Compute dbt test coverage
+	@pipenv run dbt-coverage compute test $(COV_ARGS)
 
 ## Documentation (from docs.sh)
 .PHONY: docs
@@ -135,19 +127,16 @@ fix-lint: ## Auto-fix and lint SQL files
 	@echo "Linting SQL files..."
 	@$(PIPENV) sqlfluff lint dbt/
 
-# Data refresh
 .PHONY: refresh
-refresh: load dbt-deps dbt-build
+refresh: load dbt-deps dbt-build ## Reload data and rebuild dbt
 	@echo "Refresh completed!"
 
-# Full setup
 .PHONY: full-setup
-full-setup: init load dbt-deps dbt-run
+full-setup: init load dbt-deps dbt-run ## Full project setup from scratch
 	@echo "Full setup completed!"
 
-# Development workflow
 .PHONY: dev
-dev: test-local dbt-build
+dev: test-local dbt-build ## Run development workflow
 	@echo "Development workflow completed!"
 
 .PHONY: streamlit-run

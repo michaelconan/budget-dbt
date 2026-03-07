@@ -69,9 +69,9 @@ flagged as (
         cast(k.transaction_key as text) as transaction_key,
         k.transaction_type,
         cast(k.product as text) as product,
-        cast(substr(cast(k.started_date as varchar), 1, 10) as text) as started_date,
+        cast(substr(cast(k.started_date as varchar), 1, 10) as date) as started_date,
         cast(
-            substr(cast(k.completed_date as varchar), 1, 10) as text
+            substr(cast(k.completed_date as varchar), 1, 10) as date
         ) as completed_date,
         k.transaction_description,
         k.amount,

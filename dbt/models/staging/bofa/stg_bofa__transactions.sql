@@ -100,7 +100,7 @@ flagged as (
         cast(k.bank_name as text) as bank_name,
         cast(k.account_type as text) as account_type,
         cast(k.account_name as text) as account_name,
-        cast(k.transaction_date as text) as transaction_date,
+        cast(k.transaction_date as date) as transaction_date,
         k.original_description,
         k.split_type,
         k.user_description,
