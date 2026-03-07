@@ -10,6 +10,7 @@ TMP_PROMPT = prompt.txt
 
 # Python environment
 PIPENV = pipenv run
+COV_ARGS = --run-artifacts-dir dbt/target --cov-format markdown
 
 # Default target
 .DEFAULT_GOAL := help
@@ -103,11 +104,11 @@ categorise: dump-vendors categorise-vendors ## Run the full vendor categorisatio
 
 .PHONY: doc-coverage
 doc-coverage: ## Compute dbt doc coverage
-	@pipenv run dbt-coverage compute doc
+	@pipenv run dbt-coverage compute doc $(COV_ARGS)
 
 .PHONY: test-coverage
 test-coverage: ## Compute dbt test coverage
-	@pipenv run dbt-coverage compute test
+	@pipenv run dbt-coverage compute test $(COV_ARGS)
 
 ## Documentation (from docs.sh)
 .PHONY: docs
