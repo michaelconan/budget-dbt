@@ -13,6 +13,10 @@ pandas = "*"
 [dev-packages]
 sqlfluff = "*"
 sqlfluff-templater-dbt = "*"
+sqlfmt = "*"
+mkdocs = "*"
+mkdocs-material = "*"
+shandy-sqlfmt = "*"
 
 [requires]
 python_version = "3.12"

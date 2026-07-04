@@ -110,19 +110,24 @@ doc-coverage: ## Compute dbt doc coverage
 test-coverage: ## Compute dbt test coverage
 	@pipenv run dbt-coverage compute test $(COV_ARGS)
 
-## Documentation (from docs.sh)
+## Documentation
 .PHONY: docs
-docs: ## Generate static dbt documentation
-	@echo "Generating static documentation..."
-	@$(PIPENV) dbt docs generate --static
-	@mkdir -p $(DOCS_DIR)
-	@cp dbt/target/static_index.html $(DOCS_DIR)/index.html
-	@echo "Static documentation generated at $(DOCS_DIR)/index.html"
+docs: ## Generate MkDocs wiki and dbt documentation
+	@echo "Generating dbt documentation..."
+	@$(PIPENV) dbt docs generate --static --project-dir dbt --profiles-dir dbt --target local
+	@echo "Building MkDocs wiki..."
+	@$(PIPENV) mkdocs build --clean
+	@echo "Integrating dbt docs into wiki..."
+	@mkdir -p site/dbt
+	@cp dbt/target/static_index.html site/dbt/index.html
+	@echo "Documentation generated at site/index.html"
 
 ## Code Quality (from fix-lint.sh)
 .PHONY: fix-lint
-fix-lint: ## Auto-fix and lint SQL files
-	@echo "Auto-fixing SQL files..."
+fix-lint: ## Auto-format and lint SQL files
+	@echo "Formatting SQL files..."
+	@$(PIPENV) sqlfmt dbt/
+	@echo "Auto-fixing SQL files (linting)..."
 	@$(PIPENV) sqlfluff fix dbt/
 	@echo "Linting SQL files..."
 	@$(PIPENV) sqlfluff lint dbt/
