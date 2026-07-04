@@ -70,7 +70,7 @@ dbt-test: ## Run dbt tests
 test-local: ## Run local tests
 	$(PIPENV) dbt deps; \
 	$(PIPENV) dbt build --target local --exclude "source:*"; \
-	$(PIPENV) dbt docs generate --target local
+	$(PIPENV) dbt compile --write-catalog --target local
 
 .PHONY: dbt-build
 dbt-build: ## Run dbt build (seed, run, test)
@@ -114,12 +114,14 @@ test-coverage: ## Compute dbt test coverage
 .PHONY: docs
 docs: ## Generate MkDocs wiki and dbt documentation
 	@echo "Generating dbt documentation..."
-	@$(PIPENV) dbt docs generate --static --project-dir dbt --profiles-dir dbt --target local
+	@$(PIPENV) dbt compile --write-catalog --project-dir dbt --profiles-dir dbt --target local
 	@echo "Building MkDocs wiki..."
 	@$(PIPENV) mkdocs build --clean
 	@echo "Integrating dbt docs into wiki..."
 	@mkdir -p site/dbt
-	@cp dbt/target/static_index.html site/dbt/index.html
+	@curl -s https://raw.githubusercontent.com/dbt-labs/dbt-core/main/core/dbt/task/docs/index.html -o site/dbt/index.html
+	@cp dbt/target/catalog.json site/dbt/
+	@cp dbt/target/manifest.json site/dbt/
 	@cp docs/.nojekyll site/
 	@echo "Documentation generated at site/index.html"
 
