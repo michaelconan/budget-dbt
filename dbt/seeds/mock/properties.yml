@@ -1,69 +1,6 @@
 
 version: 2
 
-revolut_config: &revolut_config
-  quote_columns: false
-  column_types:
-    type: varchar
-    product: varchar
-    started_date: varchar
-    completed_date: varchar
-    description: varchar
-    amount: varchar
-    fee: varchar
-    currency: varchar
-    state: varchar
-    balance: varchar
-  delimiter: ","
-
-revolut_columns: &revolut_columns
-  - name: type
-    description: "The kind of the transaction (e.g., CARD_PAYMENT, TRANSFER)"
-    data_type: varchar
-    data_tests:
-      - not_null
-  - name: product
-    description: "The type of account in which the transaction was made"
-    data_type: varchar
-    data_tests:
-      - not_null
-  - name: started_date
-    description: "The date and time when the transaction was initiated"
-    data_type: varchar
-    data_tests:
-      - not_null
-  - name: completed_date
-    description: "The date and time when the transaction was completed"
-    data_type: varchar
-    data_tests:
-      - not_null
-  - name: description
-    description: "The transaction description provided by Revolut"
-    data_type: varchar
-    data_tests:
-      - not_null
-  - name: amount
-    description: "The amount of the transaction (string format)"
-    data_type: varchar
-    data_tests:
-      - not_null
-  - name: fee
-    description: "Any fee charged for the transaction (string format)"
-    data_type: varchar
-  - name: currency
-    description: "The currency code of the transaction (e.g., EUR, USD)"
-    data_type: varchar
-    data_tests:
-      - not_null
-  - name: state
-    description: "Whether the transaction is posted or reverted (COMPLETED, REVERTED, PENDING)"
-    data_type: varchar
-    data_tests:
-      - not_null
-  - name: balance
-    description: "The account balance after the transaction (string format)"
-    data_type: varchar
-
 seeds:
   # ============================================================================
   # MOCK SOURCES VIA SEEDS - Only run when target is 'local'
@@ -140,18 +77,195 @@ seeds:
 
   - name: mock_raw_revolut__personal
     description: "Mock Revolut personal account transaction data for local testing"
-    config: *revolut_config
-    columns: *revolut_columns
+    config:
+      quote_columns: false
+      column_types:
+        type: varchar
+        product: varchar
+        started_date: varchar
+        completed_date: varchar
+        description: varchar
+        amount: varchar
+        fee: varchar
+        currency: varchar
+        state: varchar
+        balance: varchar
+      delimiter: ","
+    columns:
+      - name: type
+        description: "The kind of the transaction (e.g., CARD_PAYMENT, TRANSFER)"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: product
+        description: "The type of account in which the transaction was made"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: started_date
+        description: "The date and time when the transaction was initiated"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: completed_date
+        description: "The date and time when the transaction was completed"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: description
+        description: "The transaction description provided by Revolut"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: amount
+        description: "The amount of the transaction (string format)"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: fee
+        description: "Any fee charged for the transaction (string format)"
+        data_type: varchar
+      - name: currency
+        description: "The currency code of the transaction (e.g., EUR, USD)"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: state
+        description: "Whether the transaction is posted or reverted (COMPLETED, REVERTED, PENDING)"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: balance
+        description: "The account balance after the transaction (string format)"
+        data_type: varchar
 
   - name: mock_raw_revolut__spouse
     description: "Mock Revolut spouse account transaction data for local testing"
-    config: *revolut_config
-    columns: *revolut_columns
+    config:
+      quote_columns: false
+      column_types:
+        type: varchar
+        product: varchar
+        started_date: varchar
+        completed_date: varchar
+        description: varchar
+        amount: varchar
+        fee: varchar
+        currency: varchar
+        state: varchar
+        balance: varchar
+      delimiter: ","
+    columns:
+      - name: type
+        description: "The kind of the transaction (e.g., CARD_PAYMENT, TRANSFER)"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: product
+        description: "The type of account in which the transaction was made"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: started_date
+        description: "The date and time when the transaction was initiated"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: completed_date
+        description: "The date and time when the transaction was completed"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: description
+        description: "The transaction description provided by Revolut"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: amount
+        description: "The amount of the transaction (string format)"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: fee
+        description: "Any fee charged for the transaction (string format)"
+        data_type: varchar
+      - name: currency
+        description: "The currency code of the transaction (e.g., EUR, USD)"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: state
+        description: "Whether the transaction is posted or reverted (COMPLETED, REVERTED, PENDING)"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: balance
+        description: "The account balance after the transaction (string format)"
+        data_type: varchar
 
   - name: mock_raw_revolut__joint
     description: "Mock Revolut joint account transaction data for local testing"
-    config: *revolut_config
-    columns: *revolut_columns
+    config:
+      quote_columns: false
+      column_types:
+        type: varchar
+        product: varchar
+        started_date: varchar
+        completed_date: varchar
+        description: varchar
+        amount: varchar
+        fee: varchar
+        currency: varchar
+        state: varchar
+        balance: varchar
+      delimiter: ","
+    columns:
+      - name: type
+        description: "The kind of the transaction (e.g., CARD_PAYMENT, TRANSFER)"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: product
+        description: "The type of account in which the transaction was made"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: started_date
+        description: "The date and time when the transaction was initiated"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: completed_date
+        description: "The date and time when the transaction was completed"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: description
+        description: "The transaction description provided by Revolut"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: amount
+        description: "The amount of the transaction (string format)"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: fee
+        description: "Any fee charged for the transaction (string format)"
+        data_type: varchar
+      - name: currency
+        description: "The currency code of the transaction (e.g., EUR, USD)"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: state
+        description: "Whether the transaction is posted or reverted (COMPLETED, REVERTED, PENDING)"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: balance
+        description: "The account balance after the transaction (string format)"
+        data_type: varchar
 
   # ============================================================================
   # MOCK REFERENCE DATA SEEDS - Available in all environments
@@ -218,5 +332,3 @@ seeds:
       - name: revolut
         description: "The category name from Revolut"
         data_type: varchar
-
-

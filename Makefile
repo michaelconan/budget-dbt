@@ -120,6 +120,7 @@ docs: ## Generate MkDocs wiki and dbt documentation
 	@echo "Integrating dbt docs into wiki..."
 	@mkdir -p site/dbt
 	@cp dbt/target/static_index.html site/dbt/index.html
+	@cp docs/.nojekyll site/
 	@echo "Documentation generated at site/index.html"
 
 ## Code Quality (from fix-lint.sh)

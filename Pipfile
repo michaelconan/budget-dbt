@@ -4,8 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-dbt-core = "*"
-dbt-duckdb = "*"
+dbt-core = "==1.10.11"
+dbt-duckdb = "==1.10.1"
 dbt-coverage = "*"
 streamlit = "*"
 pandas = "*"
@@ -13,7 +13,6 @@ pandas = "*"
 [dev-packages]
 sqlfluff = "*"
 sqlfluff-templater-dbt = "*"
-sqlfmt = "*"
 mkdocs = "*"
 mkdocs-material = "*"
 shandy-sqlfmt = "*"
