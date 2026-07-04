@@ -10,7 +10,7 @@ TMP_PROMPT = prompt.txt
 
 # Python environment
 PIPENV = pipenv run
-COV_ARGS = --run-artifacts-dir dbt/target --cov-format markdown
+COV_ARGS = --project-dir dbt --run-artifacts-dir dbt/target --output-format markdown
 
 # Default target
 .DEFAULT_GOAL := help

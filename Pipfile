@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 dbt-core = "==2.0.0a2"
-dbt-duckdb = "==1.10.1"
 dbt-coverage = "*"
 streamlit = "*"
 pandas = "*"
