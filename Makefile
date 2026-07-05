@@ -10,7 +10,7 @@ TMP_PROMPT = prompt.txt
 
 # Python environment
 PIPENV = pipenv run
-COV_ARGS = --run-artifacts-dir dbt/target --cov-format markdown
+COV_ARGS = --project-dir dbt --run-artifacts-dir dbt/target --output-format markdown
 
 # Default target
 .DEFAULT_GOAL := help
@@ -70,7 +70,7 @@ dbt-test: ## Run dbt tests
 test-local: ## Run local tests
 	$(PIPENV) dbt deps; \
 	$(PIPENV) dbt build --target local --exclude "source:*"; \
-	$(PIPENV) dbt docs generate --target local
+	$(PIPENV) dbt compile --write-catalog --target local
 
 .PHONY: dbt-build
 dbt-build: ## Run dbt build (seed, run, test)
@@ -110,19 +110,27 @@ doc-coverage: ## Compute dbt doc coverage
 test-coverage: ## Compute dbt test coverage
 	@pipenv run dbt-coverage compute test $(COV_ARGS)
 
-## Documentation (from docs.sh)
+## Documentation
 .PHONY: docs
-docs: ## Generate static dbt documentation
-	@echo "Generating static documentation..."
-	@$(PIPENV) dbt docs generate --static
-	@mkdir -p $(DOCS_DIR)
-	@cp dbt/target/static_index.html $(DOCS_DIR)/index.html
-	@echo "Static documentation generated at $(DOCS_DIR)/index.html"
+docs: ## Generate MkDocs wiki and dbt documentation
+	@echo "Generating dbt documentation..."
+	@$(PIPENV) dbt compile --write-catalog --project-dir dbt --profiles-dir dbt --target local
+	@echo "Building MkDocs wiki..."
+	@$(PIPENV) mkdocs build --clean
+	@echo "Integrating dbt docs into wiki..."
+	@mkdir -p site/dbt
+	@curl -s https://raw.githubusercontent.com/dbt-labs/dbt-core/main/core/dbt/task/docs/index.html -o site/dbt/index.html
+	@cp dbt/target/catalog.json site/dbt/
+	@cp dbt/target/manifest.json site/dbt/
+	@cp docs/.nojekyll site/
+	@echo "Documentation generated at site/index.html"
 
 ## Code Quality (from fix-lint.sh)
 .PHONY: fix-lint
-fix-lint: ## Auto-fix and lint SQL files
-	@echo "Auto-fixing SQL files..."
+fix-lint: ## Auto-format and lint SQL files
+	@echo "Formatting SQL files..."
+	@$(PIPENV) sqlfmt dbt/
+	@echo "Auto-fixing SQL files (linting)..."
 	@$(PIPENV) sqlfluff fix dbt/
 	@echo "Linting SQL files..."
 	@$(PIPENV) sqlfluff lint dbt/

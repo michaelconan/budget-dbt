@@ -10,3 +10,11 @@ coverage.json
 .venv
 # Log files
 *.log
+
+# dbt artifacts
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+
+# MkDocs
+site/

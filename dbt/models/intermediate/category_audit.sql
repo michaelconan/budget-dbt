@@ -7,34 +7,24 @@
 -- It is used to generate a list of 'TBD' vendors for manual or AI classification.
 --
 -- 1. Get list of already categorized vendors
+with
+    existing_vendors as (
+        select distinct category, vendor from {{ ref('vendor_categories') }}
+    ),
 
-with existing_vendors as (
-    select distinct
-        category,
-        vendor
-    from
-        {{ ref('vendor_categories') }}
-),
+    -- 2. Find transactions with NULL categories and new vendors
+    -- Select distinct descriptions that are not in the existing list.
+    new_uncategorized as (
+        select distinct 'TBD' as category, transaction_description as vendor
+        from {{ ref('transactions') }}
+        where
+            category is null
+            and transaction_description
+            not in (select ev.vendor from existing_vendors as ev)
+    )
 
--- 2. Find transactions with NULL categories and new vendors
---    Select distinct descriptions that are not in the existing list.
-
-new_uncategorized as (
-    select distinct
-        'TBD' as category,
-        transaction_description as vendor
-    from {{ ref('transactions') }}
-    where
-        category is null
-        and transaction_description not in (select ev.vendor from existing_vendors as ev)
-)
-
-select
-    category,
-    vendor
+select category, vendor
 from existing_vendors
 union all
-select
-    category,
-    vendor
+select category, vendor
 from new_uncategorized

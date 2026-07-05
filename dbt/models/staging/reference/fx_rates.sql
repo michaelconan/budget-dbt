@@ -7,62 +7,59 @@
 -- the last known rate.
 --
 -- 1. Generate full range of dates as Google Finance skips certain dates
-
 {% set current_date = modules.datetime.date.today().isoformat() %}
 {% set tomorrow = (
     modules.datetime.date.today() + modules.datetime.timedelta(days=1)
 ).isoformat() %}
 
-with date_scaffold as (
-    {{ dbt_utils.date_spine(
+with
+    date_scaffold as (
+        {{ dbt_utils.date_spine(
         datepart="day",
         start_date="cast('2023-01-01' as date)",
         end_date="cast('" + tomorrow + "' as date)"
        )
-    }}),
+    }}
+    ),
 
--- 2. Join the date spine with the raw Google Finance data
---    This leaves NULLs for days where no stock market data exists.
+    -- 2. Join the date spine with the raw Google Finance data
+    -- This leaves NULLs for days where no stock market data exists.
+    rate_data as (
+        select ds.date_day as transaction_date, gf.close as rate
+        from date_scaffold as ds
+        left join
+            {{ make_seed('google_finance__eur_usd') }} as gf on ds.date_day = gf.date
+    ),
 
-rate_data as (
-    select
-        ds.date_day as transaction_date,
-        gf.close as rate
-    from date_scaffold as ds
-    left join
-        {{ make_seed('google_finance__eur_usd') }} as gf
-        on ds.date_day = gf.date
-),
-
--- 3. Create groups for consecutive NULL values
---    This technique assigns a group_id to each run of NULLs,
---    associating them with the preceding non-NULL value.
-
-with_groups as (
-    select
-        transaction_date,
-        rate,
-        sum(case when rate is not null then 1 else 0 end) over (
-            order by transaction_date rows between unbounded preceding and current row
-        ) as group_id
-    from rate_data
-),
-
--- 4. Fill NULLs with the last known value within each group
---    Forward-fill the rate using the group_id window.
-
-filled_rates as (
-    select
-        transaction_date,
-        coalesce(
+    -- 3. Create groups for consecutive NULL values
+    -- This technique assigns a group_id to each run of NULLs,
+    -- associating them with the preceding non-NULL value.
+    with_groups as (
+        select
+            transaction_date,
             rate,
-            first_value(rate) over (
-                partition by group_id
+            sum(case when rate is not null then 1 else 0 end) over (
                 order by transaction_date
                 rows between unbounded preceding and current row
-            )
-        ) as rate
-    from with_groups
-)
+            ) as group_id
+        from rate_data
+    ),
 
-select * from filled_rates
+    -- 4. Fill NULLs with the last known value within each group
+    -- Forward-fill the rate using the group_id window.
+    filled_rates as (
+        select
+            transaction_date,
+            coalesce(
+                rate,
+                first_value(rate) over (
+                    partition by group_id
+                    order by transaction_date
+                    rows between unbounded preceding and current row
+                )
+            ) as rate
+        from with_groups
+    )
+
+select *
+from filled_rates
