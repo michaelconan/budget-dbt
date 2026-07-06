@@ -1,0 +1,22 @@
+[project]
+name = "budget-dbt"
+version = "0.1.0"
+description = "Budget tracking and analysis system using dbt and DuckDB"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "dbt-core==2.0.0a2",
+    "dbt-coverage",
+    "streamlit",
+    "pandas",
+    "duckdb>=1.5.4",
+]
+
+[dependency-groups]
+dev = [
+    "sqlfluff",
+    "sqlfluff-templater-dbt",
+    "mkdocs",
+    "mkdocs-material",
+    "shandy-sqlfmt",
+]
