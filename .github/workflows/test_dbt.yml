@@ -24,10 +24,12 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
       - name: Install dependencies
         run: |
-          pip install pipenv
-          pipenv install
+          uv sync
 
       - name: Run local tests
         run: make test-local

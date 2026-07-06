@@ -9,7 +9,7 @@ SEEDS_DIR = dbt/seeds
 TMP_PROMPT = prompt.txt
 
 # Python environment
-PIPENV = pipenv run
+UV = uv run
 COV_ARGS = --project-dir dbt --run-artifacts-dir dbt/target --output-format markdown
 
 # Default target
@@ -25,8 +25,8 @@ help: ## Show this help message
 
 ## Environment Setup
 .PHONY: install
-install: ## Install Python dependencies using pipenv
-	pipenv install --dev
+install: ## Install Python dependencies using uv
+	uv sync
 
 .PHONY: init
 init: ## Initialize DuckDB database
@@ -41,7 +41,7 @@ load: ## Load data into DuckDB
 .PHONY: clean
 clean: ## Clean dbt artifacts and database
 	@echo "Cleaning dbt artifacts..."
-	$(PIPENV) dbt clean
+	$(UV) dbt clean
 	@echo "Cleaning database..."
 	@rm -f $(DB_PATH)
 	@rm -rf db/temp
@@ -49,32 +49,32 @@ clean: ## Clean dbt artifacts and database
 .PHONY: dbt-deps
 dbt-deps: ## Install dbt packages
 	@echo "Installing dbt packages..."
-	$(PIPENV) dbt deps
+	$(UV) dbt deps
 
 .PHONY: dbt-run
 dbt-run: ## Run dbt models
 	@echo "Running dbt models..."
-	$(PIPENV) dbt run
+	$(UV) dbt run
 
 .PHONY: dbt-seed
 dbt-seed: ## Run dbt seed
 	@echo "Running dbt seed..."
-	$(PIPENV) dbt seed
+	$(UV) dbt seed
 
 .PHONY: dbt-test
 dbt-test: ## Run dbt tests
 	@echo "Running dbt tests..."
-	$(PIPENV) dbt test
+	$(UV) dbt test
 
 .PHONY: test-local
 test-local: ## Run local tests
-	$(PIPENV) dbt deps; \
-	$(PIPENV) dbt build --target local --exclude "source:*"; \
-	$(PIPENV) dbt compile --write-catalog --target local
+	$(UV) dbt deps; \
+	$(UV) dbt build --target local --exclude "source:*"; \
+	$(UV) dbt compile --write-catalog --target local
 
 .PHONY: dbt-build
 dbt-build: ## Run dbt build (seed, run, test)
-	$(PIPENV) dbt build
+	$(UV) dbt build
 
 .PHONY: dump-data
 dump-data: ## Export transaction data to CSV
@@ -104,36 +104,42 @@ categorise: dump-vendors categorise-vendors ## Run the full vendor categorisatio
 
 .PHONY: doc-coverage
 doc-coverage: ## Compute dbt doc coverage
-	@pipenv run dbt-coverage compute doc $(COV_ARGS)
+	@$(UV) dbt-coverage compute doc $(COV_ARGS)
 
 .PHONY: test-coverage
 test-coverage: ## Compute dbt test coverage
-	@pipenv run dbt-coverage compute test $(COV_ARGS)
+	@$(UV) dbt-coverage compute test $(COV_ARGS)
 
 ## Documentation
 .PHONY: docs
-docs: ## Generate MkDocs wiki and dbt documentation
-	@echo "Generating dbt documentation..."
-	@$(PIPENV) dbt compile --write-catalog --project-dir dbt --profiles-dir dbt --target local
+docs: ## Generate MkDocs wiki and dbt documentation (v1 legacy)
+	@echo "Generating dbt documentation with dbt v1..."
+	@uvx --from dbt-core~=1.11.0 --with dbt-duckdb~=1.10.0 dbt docs generate --project-dir dbt --profiles-dir dbt --target local
 	@echo "Building MkDocs wiki..."
-	@$(PIPENV) mkdocs build --clean
+	@$(UV) mkdocs build --clean
 	@echo "Integrating dbt docs into wiki..."
 	@mkdir -p site/dbt
-	@curl -s https://raw.githubusercontent.com/dbt-labs/dbt-core/main/core/dbt/task/docs/index.html -o site/dbt/index.html
+	@curl -s -L https://raw.githubusercontent.com/dbt-labs/dbt-core/v1.9.0/core/dbt/task/docs/index.html -o site/dbt/index.html
 	@cp dbt/target/catalog.json site/dbt/
 	@cp dbt/target/manifest.json site/dbt/
 	@cp docs/.nojekyll site/
 	@echo "Documentation generated at site/index.html"
 
+.PHONY: docs-v2
+docs-v2: ## Generate and serve dbt v2 documentation
+	@echo "Generating dbt v2 documentation..."
+	@$(UV) dbt compile --write-index --project-dir dbt --profiles-dir dbt --target local
+	@$(UV) dbt docs serve --project-dir dbt --profiles-dir dbt --target local
+
 ## Code Quality (from fix-lint.sh)
 .PHONY: fix-lint
 fix-lint: ## Auto-format and lint SQL files
 	@echo "Formatting SQL files..."
-	@$(PIPENV) sqlfmt dbt/
+	@$(UV) sqlfmt dbt/
 	@echo "Auto-fixing SQL files (linting)..."
-	@$(PIPENV) sqlfluff fix dbt/
+	@$(UV) sqlfluff fix dbt/
 	@echo "Linting SQL files..."
-	@$(PIPENV) sqlfluff lint dbt/
+	@$(UV) sqlfluff lint dbt/
 
 .PHONY: refresh
 refresh: load dbt-deps dbt-build ## Reload data and rebuild dbt
@@ -149,7 +155,7 @@ dev: test-local dbt-build ## Run development workflow
 
 .PHONY: streamlit-run
 streamlit-run: ## Run the streamlit app
-	@$(PIPENV) streamlit run apps/budget_dashboard.py
+	@$(UV) streamlit run apps/budget_dashboard.py
 
 ## Utilities
 .PHONY: db-shell
