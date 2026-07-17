@@ -276,8 +276,8 @@ seeds:
     config:
       quote_columns: false
       column_types:
-        Date: varchar
-        Close: double
+        date: varchar
+        close: double
       delimiter: ","
     columns:
       - name: Date

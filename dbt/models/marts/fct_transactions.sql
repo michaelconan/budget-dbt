@@ -1,3 +1,7 @@
+{{ config(
+    alias='transactions'
+) }}
+
 -- =============================================================================
 -- MART: All Transactions
 -- =============================================================================
@@ -79,7 +83,7 @@ with
             ) as amount_usd
         from combined as c
         left join
-            {{ ref('fx_rates') }} as gf
+            {{ ref('stg_fx_rates') }} as gf
             on c.currency = 'EUR'
             and c.transaction_date = gf.transaction_date
         left join

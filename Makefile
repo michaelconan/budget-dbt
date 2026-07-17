@@ -76,6 +76,10 @@ test-local: ## Run local tests
 dbt-build: ## Run dbt build (seed, run, test)
 	$(UV) dbt build
 
+.PHONY: dbt-eval
+dbt-eval: ## Run dbt project evaluator tests
+	$(UV) dbt build --select package:dbt_project_evaluator --target local
+
 .PHONY: dump-data
 dump-data: ## Export transaction data to CSV
 	@echo "Exporting transaction data..."
