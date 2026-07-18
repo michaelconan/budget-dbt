@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: category_audit
+  - name: int_category_audit
     description: "Audit model that identifies transactions with missing categories (TBD) and existing vendor-category mappings"
     columns:
       - name: category
@@ -14,3 +14,4 @@ models:
         data_type: text
         data_tests:
           - not_null
+          - unique

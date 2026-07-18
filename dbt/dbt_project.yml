@@ -12,6 +12,10 @@ macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
 docs-paths: ["models"]
 
+dispatch:
+  - macro_namespace: dbt
+    search_order: ['dbt_project_evaluator', 'dbt']
+
 clean-targets:   # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
@@ -22,6 +26,15 @@ models:
       +materialized: view
     marts:
       +materialized: table
+  dbt_project_evaluator:
+    marts:
+      tests:
+        fct_sources_without_freshness:
+          +enabled: false
+
+data_tests:
+  dbt_project_evaluator:
+    +severity: "{{ env_var('DBT_PROJECT_EVALUATOR_SEVERITY', 'warn') }}"
 
 seeds:
   budget_dbt:
@@ -29,6 +42,15 @@ seeds:
       +schema: mock
       +tags: ["local"]
       +enabled: "{{ target.name == 'local' }}"
+    google_finance__eur_usd:
+      +enabled: "{{ target.name != 'local' }}"
+    vendor_category_mapping:
+      +enabled: "{{ target.name != 'local' }}"
+    category_mapping:
+      +enabled: "{{ target.name != 'local' }}"
+  dbt_project_evaluator:
+    dbt_project_evaluator_exceptions:
+      +enabled: false
 
 vars:
 
