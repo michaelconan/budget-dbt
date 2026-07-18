@@ -3,6 +3,9 @@ data/**/*.csv
 # Seed data files
 dbt/seeds/*.csv
 !dbt/seeds/dbt_project_evaluator_exceptions.csv
+!dbt/seeds/google_finance__eur_usd.csv
+!dbt/seeds/vendor_category_mapping.csv
+!dbt/seeds/category_mapping.csv
 # Local database files
 *.db
 *.duckdb
