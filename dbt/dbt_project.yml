@@ -42,6 +42,12 @@ seeds:
       +schema: mock
       +tags: ["local"]
       +enabled: "{{ target.name == 'local' }}"
+    google_finance__eur_usd:
+      +enabled: "{{ target.name != 'local' }}"
+    vendor_category_mapping:
+      +enabled: "{{ target.name != 'local' }}"
+    category_mapping:
+      +enabled: "{{ target.name != 'local' }}"
   dbt_project_evaluator:
     dbt_project_evaluator_exceptions:
       +enabled: false

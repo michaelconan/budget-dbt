@@ -11,6 +11,7 @@ TMP_PROMPT = prompt.txt
 # Python environment
 UV = uv run
 COV_ARGS = --project-dir dbt --run-artifacts-dir dbt/target --output-format markdown --model-path-filter "models/intermediate/" --model-path-filter "models/staging/bofa/" --model-path-filter "models/staging/revolut/" --model-path-filter "models/staging/reference/" --model-path-filter "models/marts/fct_transactions.sql"
+DBT_OPTS = --warn-error-options '{\"silence\": [\"NoNodeForYamlKey\", \"UnusedResourceConfigPath\"]}'
 
 # Default target
 .DEFAULT_GOAL := help
@@ -54,31 +55,31 @@ dbt-deps: ## Install dbt packages
 .PHONY: dbt-run
 dbt-run: ## Run dbt models
 	@echo "Running dbt models..."
-	$(UV) dbt run
+	$(UV) dbt run $(DBT_OPTS)
 
 .PHONY: dbt-seed
 dbt-seed: ## Run dbt seed
 	@echo "Running dbt seed..."
-	$(UV) dbt seed
+	$(UV) dbt seed $(DBT_OPTS)
 
 .PHONY: dbt-test
 dbt-test: ## Run dbt tests
 	@echo "Running dbt tests..."
-	$(UV) dbt test
+	$(UV) dbt test $(DBT_OPTS)
 
 .PHONY: test-local
 test-local: ## Run local tests
 	$(UV) dbt deps; \
-	$(UV) dbt build --target local --exclude "source:*"; \
-	$(UV) dbt compile --write-catalog --target local
+	$(UV) dbt build --target local --exclude "source:*" $(DBT_OPTS); \
+	$(UV) dbt compile --write-catalog --target local $(DBT_OPTS)
 
 .PHONY: dbt-build
 dbt-build: ## Run dbt build (seed, run, test)
-	$(UV) dbt build
+	$(UV) dbt build $(DBT_OPTS)
 
 .PHONY: dbt-eval
 dbt-eval: ## Run dbt project evaluator tests
-	$(UV) dbt build --select package:dbt_project_evaluator --target local
+	$(UV) dbt build --select package:dbt_project_evaluator --target local $(DBT_OPTS)
 
 .PHONY: dump-data
 dump-data: ## Export transaction data to CSV
