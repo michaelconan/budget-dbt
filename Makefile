@@ -10,7 +10,7 @@ TMP_PROMPT = prompt.txt
 
 # Python environment
 UV = uv run
-COV_ARGS = --project-dir dbt --run-artifacts-dir dbt/target --output-format markdown
+COV_ARGS = --project-dir dbt --run-artifacts-dir dbt/target --output-format markdown --model-path-filter "models/intermediate/" --model-path-filter "models/staging/bofa/" --model-path-filter "models/staging/revolut/" --model-path-filter "models/staging/reference/" --model-path-filter "models/marts/fct_transactions.sql"
 
 # Default target
 .DEFAULT_GOAL := help
