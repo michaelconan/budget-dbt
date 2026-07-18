@@ -2,6 +2,7 @@
 data/**/*.csv
 # Seed data files
 dbt/seeds/*.csv
+!dbt/seeds/dbt_project_evaluator_exceptions.csv
 # Local database files
 *.db
 *.duckdb
