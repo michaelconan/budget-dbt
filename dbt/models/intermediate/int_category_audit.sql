@@ -1,3 +1,7 @@
+{{ config(
+    alias='category_audit'
+) }}
+
 -- =============================================================================
 -- INTERMEDIATE: Category Audit
 -- =============================================================================
@@ -9,14 +13,14 @@
 -- 1. Get list of already categorized vendors
 with
     existing_vendors as (
-        select distinct category, vendor from {{ ref('vendor_categories') }}
+        select distinct category, vendor from {{ ref('stg_vendor_categories') }}
     ),
 
     -- 2. Find transactions with NULL categories and new vendors
     -- Select distinct descriptions that are not in the existing list.
     new_uncategorized as (
         select distinct 'TBD' as category, transaction_description as vendor
-        from {{ ref('transactions') }}
+        from {{ ref('fct_transactions') }}
         where
             category is null
             and transaction_description

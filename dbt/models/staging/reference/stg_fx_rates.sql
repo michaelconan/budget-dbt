@@ -25,7 +25,7 @@ with
     -- 2. Join the date spine with the raw Google Finance data
     -- This leaves NULLs for days where no stock market data exists.
     rate_data as (
-        select ds.date_day as transaction_date, gf.close as rate
+        select ds.date_day as transaction_date, cast(gf.close as double) as rate
         from date_scaffold as ds
         left join
             {{ make_seed('google_finance__eur_usd') }} as gf on ds.date_day = gf.date

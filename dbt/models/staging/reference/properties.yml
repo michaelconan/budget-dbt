@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: fx_rates
+  - name: stg_fx_rates
     description: "Complete daily EUR to USD exchange rates with forward-fill for missing dates"
     columns:
       - name: transaction_date
@@ -21,7 +21,7 @@ models:
                 max_value: 2.0
                 where: "transaction_date >= '2023-01-01'"
   
-  - name: vendor_categories
+  - name: stg_vendor_categories
     description: "Vendor category mappings for transaction categorization (conditionally references local seed or production table)"
     columns:
       - name: vendor
@@ -29,6 +29,7 @@ models:
         data_type: text
         data_tests:
           - not_null
+          - unique
       - name: category
         description: "The category to assign to transactions from this vendor"
         data_type: text

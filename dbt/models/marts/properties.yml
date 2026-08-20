@@ -2,7 +2,7 @@
 version: 2
 
 models:
-  - name: transactions
+  - name: fct_transactions
     description: "Combined and translated transactions from Revolut and Bank of America"
     columns:
       - name: transaction_key

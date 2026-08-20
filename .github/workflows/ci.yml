@@ -1,4 +1,4 @@
-name: Test dbt models
+name: CI
 
 on:
   pull_request:
@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   dbt_test:
+    name: Run DBT Tests
     runs-on: ubuntu-latest
     env:
       DBT_PROJECT_DIR: dbt
@@ -59,3 +60,34 @@ jobs:
 
             ### Test Coverage
             ${{ steps.coverage.outputs.test_coverage }}
+
+  dbt_project_evaluator:
+    name: Run DBT Project Evaluator
+    runs-on: ubuntu-latest
+    env:
+      DBT_PROJECT_DIR: dbt
+      DBT_PROFILES_DIR: dbt
+      DBT_PROJECT_EVALUATOR_SEVERITY: error
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: |
+          uv sync
+
+      - name: Setup local database
+        run: |
+          make test-local
+
+      - name: Run project evaluator
+        run: |
+          make dbt-eval

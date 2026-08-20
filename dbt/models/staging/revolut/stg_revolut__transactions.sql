@@ -109,7 +109,7 @@ with
             ) as category
         from flagged as f
         left join
-            {{ ref('vendor_categories') }} as vc
+            {{ ref('stg_vendor_categories') }} as vc
             on lower(f.transaction_description) like '%' || lower(vc.vendor) || '%'
         group by
             f.transaction_key,
