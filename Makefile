@@ -29,16 +29,6 @@ help: ## Show this help message
 install: ## Install Python dependencies using uv
 	uv sync
 
-.PHONY: init
-init: ## Initialize DuckDB database
-	@echo "Initializing DuckDB database..."
-	@./script/init_db.sh $(DB_PATH)
-
-.PHONY: load
-load: ## Load data into DuckDB
-	@echo "Loading data into DuckDB..."
-	@./script/load.sh $(DB_PATH) $(DATA_DIR)
-
 .PHONY: clean
 clean: ## Clean dbt artifacts and database
 	@echo "Cleaning dbt artifacts..."
@@ -140,18 +130,14 @@ docs-v2: ## Generate and serve dbt v2 documentation
 .PHONY: fix-lint
 fix-lint: ## Auto-format and lint SQL files
 	@echo "Formatting SQL files..."
-	@$(UV) sqlfmt dbt/
-	@echo "Auto-fixing SQL files (linting)..."
-	@$(UV) sqlfluff fix dbt/
-	@echo "Linting SQL files..."
-	@$(UV) sqlfluff lint dbt/
+	@$(UV) sqlfmt dbt/models dbt/tests
 
 .PHONY: refresh
-refresh: load dbt-deps dbt-build ## Reload data and rebuild dbt
+refresh: dbt-deps dbt-build ## Reload data and rebuild dbt
 	@echo "Refresh completed!"
 
 .PHONY: full-setup
-full-setup: init load dbt-deps dbt-run ## Full project setup from scratch
+full-setup: dbt-deps dbt-run ## Full project setup from scratch
 	@echo "Full setup completed!"
 
 .PHONY: dev
