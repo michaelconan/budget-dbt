@@ -71,6 +71,10 @@ dbt-build: ## Run dbt build (seed, run, test)
 dbt-eval: ## Run dbt project evaluator tests
 	$(UV) dbt build --select package:dbt_project_evaluator --target local $(DBT_OPTS)
 
+.PHONY: eval-report
+eval-report: ## Generate Markdown report from dbt project evaluator
+	@$(UV) python script/evaluator_report.py
+
 .PHONY: dump-data
 dump-data: ## Export transaction data to CSV
 	@echo "Exporting transaction data..."
@@ -107,9 +111,9 @@ test-coverage: ## Compute dbt test coverage
 
 ## Documentation
 .PHONY: docs
-docs: ## Generate MkDocs wiki and dbt documentation (v1 legacy)
-	@echo "Generating dbt documentation with dbt v1..."
-	@uvx --from dbt-core~=1.11.0 --with dbt-duckdb~=1.10.0 dbt docs generate --project-dir dbt --profiles-dir dbt --target local
+docs: ## Generate MkDocs wiki and dbt documentation
+	@echo "Generating dbt documentation..."
+	@$(UV) dbt compile --write-catalog --project-dir dbt --profiles-dir dbt --target local $(DBT_OPTS)
 	@echo "Building MkDocs wiki..."
 	@$(UV) mkdocs build --clean
 	@echo "Integrating dbt docs into wiki..."
