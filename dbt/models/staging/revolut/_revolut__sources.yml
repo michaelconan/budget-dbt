@@ -9,6 +9,8 @@ sources:
       - name: personal
         identifier: raw_revolut__personal
         description: "Personal account statement exported from Revolut"
+        config:
+          external_location: "{{ \"read_csv('dbt/mocks/mock_raw_revolut__personal.csv', all_varchar=true)\" if target.name == 'local' else \"read_csv('data/revolut/personal/*.csv', all_varchar=true)\" }}"
         columns:
           - name: type
             description: "The kind of the transaction"
@@ -107,6 +109,8 @@ sources:
       - name: spouse
         identifier: raw_revolut__spouse
         description: "Spouse account statement exported from Revolut"
+        config:
+          external_location: "{{ \"read_csv('dbt/mocks/mock_raw_revolut__spouse.csv', all_varchar=true)\" if target.name == 'local' else \"read_csv('data/revolut/spouse/*.csv', all_varchar=true)\" }}"
         columns:
           - name: type
             description: "The kind of the transaction"
@@ -205,6 +209,8 @@ sources:
       - name: joint
         identifier: raw_revolut__joint
         description: "Joint account statement exported from Revolut"
+        config:
+          external_location: "{{ \"read_csv('dbt/mocks/mock_raw_revolut__joint.csv', all_varchar=true)\" if target.name == 'local' else \"read_csv('data/revolut/joint/*.csv', all_varchar=true)\" }}"
         columns:
           - name: type
             description: "The kind of the transaction"

@@ -29,16 +29,6 @@ help: ## Show this help message
 install: ## Install Python dependencies using uv
 	uv sync
 
-.PHONY: init
-init: ## Initialize DuckDB database
-	@echo "Initializing DuckDB database..."
-	@./script/init_db.sh $(DB_PATH)
-
-.PHONY: load
-load: ## Load data into DuckDB
-	@echo "Loading data into DuckDB..."
-	@./script/load.sh $(DB_PATH) $(DATA_DIR)
-
 .PHONY: clean
 clean: ## Clean dbt artifacts and database
 	@echo "Cleaning dbt artifacts..."
@@ -81,6 +71,10 @@ dbt-build: ## Run dbt build (seed, run, test)
 dbt-eval: ## Run dbt project evaluator tests
 	$(UV) dbt build --select package:dbt_project_evaluator --target local $(DBT_OPTS)
 
+.PHONY: eval-report
+eval-report: ## Generate Markdown report from dbt project evaluator
+	@$(UV) python script/evaluator_report.py
+
 .PHONY: dump-data
 dump-data: ## Export transaction data to CSV
 	@echo "Exporting transaction data..."
@@ -117,9 +111,9 @@ test-coverage: ## Compute dbt test coverage
 
 ## Documentation
 .PHONY: docs
-docs: ## Generate MkDocs wiki and dbt documentation (v1 legacy)
-	@echo "Generating dbt documentation with dbt v1..."
-	@uvx --from dbt-core~=1.11.0 --with dbt-duckdb~=1.10.0 dbt docs generate --project-dir dbt --profiles-dir dbt --target local
+docs: ## Generate MkDocs wiki and dbt documentation
+	@echo "Generating dbt documentation..."
+	@$(UV) dbt compile --write-catalog --project-dir dbt --profiles-dir dbt --target local $(DBT_OPTS)
 	@echo "Building MkDocs wiki..."
 	@$(UV) mkdocs build --clean
 	@echo "Integrating dbt docs into wiki..."
@@ -140,18 +134,14 @@ docs-v2: ## Generate and serve dbt v2 documentation
 .PHONY: fix-lint
 fix-lint: ## Auto-format and lint SQL files
 	@echo "Formatting SQL files..."
-	@$(UV) sqlfmt dbt/
-	@echo "Auto-fixing SQL files (linting)..."
-	@$(UV) sqlfluff fix dbt/
-	@echo "Linting SQL files..."
-	@$(UV) sqlfluff lint dbt/
+	@$(UV) sqlfmt dbt/models dbt/tests
 
 .PHONY: refresh
-refresh: load dbt-deps dbt-build ## Reload data and rebuild dbt
+refresh: dbt-deps dbt-build ## Reload data and rebuild dbt
 	@echo "Refresh completed!"
 
 .PHONY: full-setup
-full-setup: init load dbt-deps dbt-run ## Full project setup from scratch
+full-setup: dbt-deps dbt-run ## Full project setup from scratch
 	@echo "Full setup completed!"
 
 .PHONY: dev

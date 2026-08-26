@@ -91,3 +91,18 @@ jobs:
       - name: Run project evaluator
         run: |
           make dbt-eval
+
+      - name: Generate evaluator report
+        id: evaluator_report
+        run: |
+          report=$(make -s eval-report)
+          echo "evaluator_report<<EOF" >> $GITHUB_OUTPUT
+          echo "$report" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Post evaluator report comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ${{ steps.evaluator_report.outputs.evaluator_report }}

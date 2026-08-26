@@ -18,7 +18,7 @@ select
     currency,
     state as transaction_state,
     balance
-from {{ make_source('revolut', 'personal') }}
+from {{ source('revolut', 'personal') }}
 
 union all
 
@@ -33,7 +33,7 @@ select
     currency,
     state,
     balance
-from {{ make_source('revolut', 'spouse') }}
+from {{ source('revolut', 'spouse') }}
 
 union all
 
@@ -48,4 +48,4 @@ select
     currency,
     state,
     balance
-from {{ make_source('revolut', 'joint') }}
+from {{ source('revolut', 'joint') }}

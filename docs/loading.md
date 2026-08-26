@@ -10,14 +10,12 @@ The system supports the following sources:
 
 ## Pipeline Steps
 
-1.  **Initialization**:
-    - The database is initialized using `make init`, which runs `script/init_db.sh`.
-2.  **Raw Data Placement**:
+1.  **Raw Data Placement**:
     - Raw CSV files should be placed in the `data/` directory:
         - `data/bofa/*.csv`
         - `data/revolut/personal/*.csv`
         - `data/revolut/spouse/*.csv`
         - `data/revolut/joint/*.csv`
-3.  **Loading**:
-    - Run `make load` to execute `script/load.sh`.
-    - This script uses DuckDB's native CSV reading capabilities to ingest the data into staging tables.
+2.  **Loading via dbt**:
+    - Transaction CSV files are read directly by dbt using DuckDB's `external_location` configured in source YAML properties.
+    - When running locally (`target: local`), dbt automatically uses mock data files located in `dbt/mocks/`.

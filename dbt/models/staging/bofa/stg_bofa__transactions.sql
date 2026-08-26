@@ -38,7 +38,7 @@ with
             nullif(trim(classification), '') as classification,
             {{ standardise_ascii("nullif(trim(simple_description), '')") }}
             as simple_description
-        from {{ make_source('bofa', 'activity') }}
+        from {{ source('bofa', 'activity') }}
 
     ),
 

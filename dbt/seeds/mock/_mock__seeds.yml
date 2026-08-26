@@ -1,0 +1,69 @@
+
+version: 2
+
+seeds:
+  # ============================================================================
+  # MOCK REFERENCE DATA SEEDS - Available in all environments
+  # ============================================================================
+
+  - name: mock_google_finance__eur_usd
+    description: "Historical EUR to USD exchange rates from Google Finance"
+    config:
+      quote_columns: false
+      column_types:
+        date: varchar
+        close: double
+      delimiter: ","
+    columns:
+      - name: Date
+        description: "The date of the exchange rate in YYYY-MM-DD format"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: Close
+        description: "The closing EUR to USD exchange rate for the date"
+        data_type: double
+        data_tests:
+          - not_null
+
+  - name: mock_vendor_category_mapping
+    description: "Mapping of transaction vendors to their assigned categories"
+    config:
+      quote_columns: false
+      column_types:
+        category: varchar
+        vendor: varchar
+      delimiter: ","
+    columns:
+      - name: category
+        description: "The category to assign to transactions from this vendor"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: vendor
+        description: "The vendor name or description pattern to match"
+        data_type: varchar
+        data_tests:
+          - not_null
+
+  - name: mock_category_mapping
+    description: "Mapping between source system categories and standardized category types"
+    config:
+      quote_columns: false
+      column_types:
+        type: varchar
+        bofa: varchar
+        revolut: varchar
+      delimiter: ","
+    columns:
+      - name: type
+        description: "The standardized category type"
+        data_type: varchar
+        data_tests:
+          - not_null
+      - name: bofa
+        description: "The category name from Bank of America"
+        data_type: varchar
+      - name: revolut
+        description: "The category name from Revolut"
+        data_type: varchar

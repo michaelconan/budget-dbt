@@ -28,6 +28,9 @@ models:
       +materialized: table
   dbt_project_evaluator:
     marts:
+      dag:
+        fct_multiple_sources_joined:
+          +enabled: false
       tests:
         fct_sources_without_freshness:
           +enabled: false

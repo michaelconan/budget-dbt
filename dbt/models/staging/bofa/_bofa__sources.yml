@@ -9,6 +9,8 @@ sources:
       - name: activity
         identifier: raw_bofa__activity
         description: "My Financial Picture activity data exported from Bank of America"
+        config:
+          external_location: "{{ \"read_csv('dbt/mocks/mock_raw_bofa__activity.csv', all_varchar=true)\" if target.name == 'local' else \"read_csv('data/bofa/*.csv', all_varchar=true)\" }}"
         data_tests:
           - dbt_utils.expression_is_true:
               arguments:
